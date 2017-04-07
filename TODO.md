@@ -1,0 +1,5 @@
+- [ ]  Cli interface
+- [ ]  Bootstrapping Service
+- [ ]  Lookup Service - Kademlia
+- [ ]  Failure Detection
+- [ ]  Rebalancing of keys
