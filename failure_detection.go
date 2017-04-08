@@ -47,22 +47,19 @@ type failureCallback func(nodeNumber int)
 
 func startFailureDetection(numNodes int, hostname string, callback failureCallback) {
 	fmt.Println("NumNodes is ", numNodes)
-	fmt.Println("Launching server...")
+	fmt.Println("Launching failure server...")
 	fmt.Println(time.Now())
 
 	gob.Register(&Failure{})
 	gob.Register(&net.UDPConn{})
   failureHost = fmt.Sprintf("%s:8084", hostname)
 
-	local, _ := net.Listen("unix", "/tmp/final.sock") // Change to unix socket
-
 	failureServers = make([]Failure, numNodes)
 	failureConns = make([]net.UDPConn, numNodes)
 	connectToFailureCluster(numNodes)
 	fmt.Println("Connected to failure servers")
 
-	wg.Add(2)
-	go handleConn(local, 0)
+	wg.Add(1)
 	go failureDetection(callback)
 	wg.Wait()
   fmt.Println("All connections closed. Shutting down server...")
@@ -73,8 +70,8 @@ func failureDetection(callback failureCallback) {
 	time.Sleep(10 * time.Second)
 	numNodes = len(failureServers)
   for {
-		failureServers[failureNode-1].Failed = false
-		gossipIdx := rand.Intn(numNodes)
+		failureServers[failureNode-1].Failed = false // our node has not failed if we are here
+		gossipIdx := rand.Intn(numNodes) // pick a random node
 		if gossipIdx == failureNode - 1 {
 			continue
 		}
