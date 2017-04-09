@@ -1,6 +1,9 @@
 all: build
 
-build: client server
+format:
+	gofmt -w .
+
+build: format
 	cd client && go build
 	cd server && go build
 

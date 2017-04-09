@@ -1,5 +1,9 @@
 package main
 
+import (
+	"net"
+)
+
 /**
  * Node structs (we include this file in both client/server so that
  * the client can make RPC calls with our structs)
