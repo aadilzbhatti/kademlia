@@ -1,30 +1,23 @@
 package main
 
 import (
-	"bufio"
+	"encoding/gob"
 	"fmt"
-	"net"
-	"os"
-	"os/exec"
 	set "github.com/deckarep/golang-set"
-	"strconv"
-	"strings"
+	"math/rand"
+	"net"
 	"sync"
 	"time"
-	"math/rand"
-	"encoding/gob"
 )
 
 type Failure struct {
-  Id int
-  Counter int
-  TimeSincePing int64
-  Failed bool
+	Id            int
+	Counter       int
+	TimeSincePing int64
+	Failed        bool
 }
 
-var clients = make([]net.Conn, 0, 0)
 var servers = make([]net.Conn, 0, 0)
-var numClients = 0
 var mutex = &sync.Mutex{}
 var seenMessages = set.NewSet()
 var wg sync.WaitGroup
@@ -52,7 +45,7 @@ func startFailureDetection(numNodes int, hostname string, callback failureCallba
 
 	gob.Register(&Failure{})
 	gob.Register(&net.UDPConn{})
-  failureHost = fmt.Sprintf("%s:8084", hostname)
+	failureHost = fmt.Sprintf("%s:8084", hostname)
 
 	failureServers = make([]Failure, numNodes)
 	failureConns = make([]net.UDPConn, numNodes)
@@ -62,22 +55,22 @@ func startFailureDetection(numNodes int, hostname string, callback failureCallba
 	wg.Add(1)
 	go failureDetection(callback)
 	wg.Wait()
-  fmt.Println("All connections closed. Shutting down server...")
+	fmt.Println("All connections closed. Shutting down server...")
 }
 
 func failureDetection(callback failureCallback) {
-  fmt.Println("Starting FD")
+	fmt.Println("Starting FD")
 	time.Sleep(10 * time.Second)
 	numNodes = len(failureServers)
-  for {
+	for {
 		failureServers[failureNode-1].Failed = false // our node has not failed if we are here
-		gossipIdx := rand.Intn(numNodes) // pick a random node
-		if gossipIdx == failureNode - 1 {
+		gossipIdx := rand.Intn(numNodes)             // pick a random node
+		if gossipIdx == failureNode-1 {
 			continue
 		}
-    failureMutex.Lock()
+		failureMutex.Lock()
 		gossipMember := failureServers[gossipIdx]
-    failureMutex.Unlock()
+		failureMutex.Unlock()
 		if gossipMember.Failed {
 			continue
 		}
@@ -88,16 +81,16 @@ func failureDetection(callback failureCallback) {
 		}
 
 		time.Sleep(time.Duration(T_gossip) * time.Millisecond)
-    failureMutex.Lock()
+		failureMutex.Lock()
 		fmt.Printf("%v - Failures are %v\n", (time.Now().UnixNano() / int64(time.Millisecond)), failureServers)
 		failureServers[failureNode-1].Counter++
-    failureServers[failureNode-1].TimeSincePing = time.Now().Unix()
+		failureServers[failureNode-1].TimeSincePing = time.Now().Unix()
 		failureMutex.Unlock()
 
 		go writeBuf(gossipMember, callback)
 		go readBuf(failureServers[failureNode-1], callback)
-  }
-  defer wg.Done()
+	}
+	defer wg.Done()
 }
 
 func writeBuf(gossipMember Failure, callback failureCallback) {
@@ -115,7 +108,7 @@ func writeBuf(gossipMember Failure, callback failureCallback) {
 		failureServers[gossipMember.Id-1].Failed = true
 		fmt.Printf("%v - Node %d has failed\n", (time.Now().UnixNano() / int64(time.Millisecond)), gossipMember.Id)
 		msg := fmt.Sprintf("Node %d has failed\n", gossipMember.Id)
-    handleFailedNode(gossipMember.Id, callback)
+		handleFailedNode(gossipMember.Id, callback)
 		writeToServers(msg)
 	}
 	failureMutex.Unlock()
@@ -128,25 +121,26 @@ func readBuf(self Failure, callback failureCallback) {
 	dec := gob.NewDecoder(&conn)
 	var newFailures []Failure
 	err := dec.Decode(&newFailures)
-	if err != nil {}
-  for i := range failureServers {
-    diff := time.Now().Unix() - failureServers[i].TimeSincePing
-    if diff > int64(T_fail) && !failureServers[i].Failed {
-      failureServers[i].Failed = true
+	if err != nil {
+	}
+	for i := range failureServers {
+		diff := time.Now().Unix() - failureServers[i].TimeSincePing
+		if diff > int64(T_fail) && !failureServers[i].Failed {
+			failureServers[i].Failed = true
 			fmt.Printf("%v - Node %d has failed\n", (time.Now().UnixNano() / int64(time.Millisecond)), failureServers[i].Id)
 			msg := fmt.Sprintf("Node %d has failed\n", failureServers[i].Id)
 			writeToServers(msg)
-      go handleFailedNode(i, callback)
-    }
-  }
-  failureMutex.Lock()
+			go handleFailedNode(i, callback)
+		}
+	}
+	failureMutex.Lock()
 	failureServers = mergeFailures(newFailures, failureServers)
-  failureMutex.Unlock()
+	failureMutex.Unlock()
 }
 
 func handleFailedNode(node int, callback failureCallback) {
-  time.Sleep(time.Duration(T_cleanup) * time.Millisecond)
-  callback(node)
+	time.Sleep(time.Duration(T_cleanup) * time.Millisecond)
+	callback(node)
 	fmt.Println("Removed node", node)
 }
 
@@ -174,15 +168,6 @@ func mergeFailures(newFailures []Failure, failures []Failure) []Failure {
 	return ret
 }
 
-func writeToClient(message string, clients []net.Conn) {
-	data := message + "\n"
-	mutex.Lock()
-	for i := range clients {
-		clients[i].Write([]byte(data))
-	}
-	mutex.Unlock()
-}
-
 func writeToServers(message string) {
 	data := message + "\n"
 	mutex.Lock()
@@ -193,63 +178,63 @@ func writeToServers(message string) {
 }
 
 func connectToFailureCluster(numNodes int) {
-  wg.Add(numNodes)
-  for i := 1; i <= numNodes; i++ {
-    serverName := fmt.Sprintf("sp17-cs425-g26-0%d.cs.illinois.edu:8084", i)
-    if serverName != failureHost {
-      go connectToFailureServer(serverName, hostname, i, false)
-    } else {
-      go connectToFailureServer(serverName, hostname, i, true)
-      failureNode = i
-    }
-  }
-  wg.Wait()
+	wg.Add(numNodes)
+	for i := 1; i <= numNodes; i++ {
+		serverName := fmt.Sprintf("sp17-cs425-g26-0%d.cs.illinois.edu:8084", i)
+		if serverName != failureHost {
+			go connectToFailureServer(serverName, hostname, i, false)
+		} else {
+			go connectToFailureServer(serverName, hostname, i, true)
+			failureNode = i
+		}
+	}
+	wg.Wait()
 }
 
 func setUpSelf(nodeNum int, serverName string) Failure {
-  ServerAddr, err := net.ResolveUDPAddr("udp", serverName)
-  if err != nil {
-    fmt.Println("Error in resolve: ", err)
-  }
-  ServerConn, err := net.ListenUDP("udp", ServerAddr)
-  if err != nil {
-    fmt.Println("Error in listen: ", err)
-  }
+	ServerAddr, err := net.ResolveUDPAddr("udp", serverName)
+	if err != nil {
+		fmt.Println("Error in resolve: ", err)
+	}
+	ServerConn, err := net.ListenUDP("udp", ServerAddr)
+	if err != nil {
+		fmt.Println("Error in listen: ", err)
+	}
 	failureConns[nodeNum-1] = *ServerConn
-  return Failure{nodeNum, 0, time.Now().Unix(), false}
+	return Failure{nodeNum, 0, time.Now().Unix(), false}
 }
 
 func connectToFailureServer(node string, hostname string, nodeNum int, self bool) {
-  if self {
+	if self {
 		failureMutex.Lock()
-    ret := setUpSelf(nodeNum, node)
-    failureServers[nodeNum-1] = ret
-    failureMutex.Unlock()
-  } else {
-	  for {
-	    ServerAddr, err := net.ResolveUDPAddr("udp", node)
-	    if err != nil {
-	      fmt.Println("Error: ", err)
-	    }
-	    LocalAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("%s:0", hostname))
-	    if err != nil {
-	      fmt.Println("Error: ", err)
-	    }
-	    conn, err := net.DialUDP("udp", LocalAddr, ServerAddr)
-	    if conn == nil {
-	      continue
-	    } else {
-	      if err != nil {
-	        fmt.Println("Error: ", err)
-	      }
-	      newMember := Failure{nodeNum, 0, time.Now().Unix(), false}
+		ret := setUpSelf(nodeNum, node)
+		failureServers[nodeNum-1] = ret
+		failureMutex.Unlock()
+	} else {
+		for {
+			ServerAddr, err := net.ResolveUDPAddr("udp", node)
+			if err != nil {
+				fmt.Println("Error: ", err)
+			}
+			LocalAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("%s:0", hostname))
+			if err != nil {
+				fmt.Println("Error: ", err)
+			}
+			conn, err := net.DialUDP("udp", LocalAddr, ServerAddr)
+			if conn == nil {
+				continue
+			} else {
+				if err != nil {
+					fmt.Println("Error: ", err)
+				}
+				newMember := Failure{nodeNum, 0, time.Now().Unix(), false}
 				failureMutex.Lock()
 				failureConns[nodeNum-1] = *conn
-	      failureServers[nodeNum-1] = newMember
-	      failureMutex.Unlock()
-	      break
-	    }
-	  }
+				failureServers[nodeNum-1] = newMember
+				failureMutex.Unlock()
+				break
+			}
+		}
 	}
 	defer wg.Done()
 }
