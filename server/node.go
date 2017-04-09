@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"hash/fnv"
 	"math"
-	"net"
 )
 
 var alpha int = 3
@@ -35,16 +34,16 @@ type Node struct {
 // }
 
 func initializeRoutingTable(id int, numNodes int) [][]TableEntry {
-  k := int(math.Ceil(math.Log2(float64(numNodes))))
-  buckets := make([][]TableEntry, k)
-  return buckets
+	k := int(math.Ceil(math.Log2(float64(numNodes))))
+	buckets := make([][]TableEntry, k)
+	return buckets
 }
 
 func initializeNode(id int, numNodes int, port int, address string) Node {
-  routingTable := initializeRoutingTable(id, numNodes)
+	routingTable := initializeRoutingTable(id, numNodes)
 	keys := make([]KV, 5)
-  n := Node{routingTable, id, port, address}
-  return n
+	n := Node{routingTable, id, port, address, keys}
+	return n
 }
 
 func hash(key string, size int) int {

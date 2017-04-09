@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net"
+	"net/http"
 	"net/rpc"
 	"sync"
-	"log"
-	"http"
 )
 
 var barrier sync.WaitGroup
@@ -62,7 +62,7 @@ func handleConn(ln net.Listener) {
 		lock.Lock()
 		clients = append(clients, conn)
 		lock.Unlock()
-		go handleClient(conn)
+		// go handleClient(conn)
 	}
 }
 

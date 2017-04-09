@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"strings"
 	"os/exec"
+	"strings"
 )
 
 func getHostName() string {
