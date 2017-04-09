@@ -7,32 +7,10 @@ import (
 	"net/rpc"
 )
 
-type JoinArgs struct {
-	Id       int
-	Hostname string
-	Port     int
-	Ip       net.IP
-}
-
-type FindArgs struct {
-	Key                 string
-	PrevClosestDistance int
-}
-
-type SetArgs struct {
-	kvp KV
-}
-
-type OwnerArgs struct {
-	Key string
-}
-
-type ListLocalArgs struct{}
-
 func (n *Node) Join(ja *JoinArgs, newNode *string, reply *string) error {
 	// populate my buckets
 	id := ja.Id
-	bucket := getConflictingBit(id, self.Id) - 1
+	bucket := getBucket(id, self.Id)
 	entry := TableEntry{id, ja.Port, ja.Hostname}
 	for _, v := range self.Table[bucket] {
 		if v.Id == id {
@@ -68,7 +46,7 @@ func (n *Node) Find(fa *FindArgs, reply *KV) error {
 	// if our distance(id, hashed key) = 0
 	// check ourselves for the key
 	// reply FOUND if we found it
-	// if not found, query alpha nodes in closest bucket (found by getConflictingBit - 1)
+	// if not found, query alpha nodes in closest bucket (found by getBucket)
 	// once found, reply KV to original node
 
 	return nil
