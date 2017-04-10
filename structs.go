@@ -10,8 +10,8 @@ type TableEntry struct {
 }
 
 type KV struct {
-	key   string
-	value string
+	Key   string
+	Value string
 }
 
 type Node struct {
@@ -29,11 +29,17 @@ type JoinArgs struct {
 	Id       int
 	Hostname string
 	Port     int
+	NewNode string
 }
 
 type FindArgs struct {
 	Key                 string
-	PrevClosestDistance int
+	PrevClosestDistance float64
+}
+
+type FindReply struct {
+	KVP KV
+	Closest []Node
 }
 
 type SetArgs struct {

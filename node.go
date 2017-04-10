@@ -20,11 +20,15 @@ func initializeNode(id int, numNodes int, port int, address string) Node {
 	return n
 }
 
-func findKey(key string, this Node) (string, error) {
-	for i := range this.Keys {
-		if this.Keys[i].key == key {
-			return this.Keys[i].value, nil
+func (n *Node) findKey(key string) (string, error) {
+	for i := range n.Keys {
+		if n.Keys[i].Key == key {
+			return n.Keys[i].Value, nil
 		}
 	}
 	return "", fmt.Errorf("Could not find key in node")
+}
+
+func (n *Node) storeKVP(KVP KV) {
+	n.Keys = append(n.Keys, KVP)
 }

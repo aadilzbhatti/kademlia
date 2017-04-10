@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"net/http"
 	"net/rpc"
 	"sync"
 )
@@ -16,7 +15,7 @@ var clients = make([]net.Conn, 10)
 var lock = &sync.Mutex{}
 var self Node
 
-func main() {
+func startServer() {
 	// set up node ID
 	fmt.Println("Starting!")
 	host := "sp17-cs425-g26-0%d.cs.illinois.edu"
@@ -34,7 +33,7 @@ func main() {
 	self.Table = bucket
 
 	// set up RPCs
-	setupJoinRPC()
+	go setupRPC()
 
 	// add nodes {1, 2, 3} \ nodeID to buckets
 	for i := 1; i < 4; i++ {
@@ -59,15 +58,18 @@ func handleSelf() {
 	defer barrier.Done()
 }
 
-func setupJoinRPC() {
+func setupRPC() {
 	node := new(Node)
 	rpc.Register(node)
-	rpc.HandleHTTP()
-	l, e := net.Listen("tcp", ":8085")
-	if e != nil {
-		log.Fatal("listen error:", e)
+
+	for {
+		l, e := net.Listen("tcp", ":8085")
+		if e != nil {
+			log.Fatal("Join listen error:", e)
+		}
+
+		go rpc.Accept(l)
 	}
-	go http.Serve(l, nil)
 }
 
 func makeJoinCall(self Node, host string) error {
@@ -76,9 +78,11 @@ func makeJoinCall(self Node, host string) error {
 		log.Fatal("Erorr in dialing:", err)
 		return err
 	}
-	ja := JoinArgs{self.Id, self.Address, self.Port}
-	divCall := client.Go("Node.Join", ja, "NEWNODE", nil)
-	reply := <-divCall.Done
-	fmt.Println(reply)
+
+	ja := JoinArgs{self.Id, self.Address, self.Port, "NEWNODE"}
+	var reply string
+	divCall := client.Go("Node.Join", ja, &reply, nil)
+	replyCall := <-divCall.Done
+	fmt.Println(replyCall)
 	return nil
 }
