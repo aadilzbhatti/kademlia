@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"log"
-	"net"
 	"net/rpc"
+	"net"
 )
 
 func clientSet(key string, value string) error {
