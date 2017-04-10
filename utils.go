@@ -6,6 +6,7 @@ import (
 	"math"
 	"os/exec"
 	"strings"
+  "net"
 )
 
 /**
@@ -18,7 +19,7 @@ func getHostName() string {
 	if err != nil {
 		fmt.Println("Failed to obtain hostname")
 	}
-	return strings.Trim(string(out), "\n")
+	return strings.TrimSpace(string(out))
 }
 
 /**
@@ -63,6 +64,21 @@ func getBucket(id1 int, id2 int) int {
 func distance(id1 int, id2 int) int {
 	return id1 ^ id2
 }
+
+func getPort() int {
+	addr, err := net.ResolveTCPAddr("tcp", "localhost:0")
+	if err != nil {
+		panic(err)
+	}
+
+	l, err := net.ListenTCP("tcp", addr)
+	if err != nil {
+		panic(err)
+	}
+	defer l.Close()
+	return l.Addr().(*net.TCPAddr).Port
+}
+
 
 // func (n *Node) getkClosestContacts(target []byte, sender []byte) *sortedList {
 // 	// Get all the neighbors - Find K closest ones
