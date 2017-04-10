@@ -14,7 +14,7 @@ var nodes = make([]net.Conn, 10)
 var clients = make([]net.Conn, 10)
 var lock = &sync.Mutex{}
 var self Node
-var port int = 20000
+var port int = 3000
 
 func startServer() {
 	// set up node ID
