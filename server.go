@@ -63,7 +63,7 @@ func setupRPC() {
 	rpc.Register(node)
 
 	for {
-		l, e := net.Listen("tcp", ":8085")
+		l, e := net.Listen("tcp", ":8081")
 		if e != nil {
 			log.Fatal("Join listen error:", e)
 		}
@@ -73,7 +73,7 @@ func setupRPC() {
 }
 
 func makeJoinCall(self Node, host string) error {
-	client, err := rpc.DialHTTP("tcp", fmt.Sprintf("%s:8085", host))
+	client, err := rpc.DialHTTP("tcp", fmt.Sprintf("%s:8081", host))
 	if err != nil {
 		log.Fatal("Erorr in dialing:", err)
 		return err
