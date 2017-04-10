@@ -28,7 +28,7 @@ func (n *Node) Join(ja *JoinArgs, reply *string) error {
 		na.NewNode = ""
 		for _, v := range self.Table { // in reality we'd send this message to our k-closest, not all
 			for _, b := range v {
-				client, err := rpc.DialHTTP("tcp", fmt.Sprintf("%s:8081", b.Address))
+				client, err := rpc.DialHTTP("tcp", fmt.Sprintf("%s:8080", b.Address))
 				if err != nil {
 					log.Fatal("Error in dialing:", err)
 					return err
@@ -59,7 +59,7 @@ func (n *Node) Set(sa *SetArgs, reply *string) error {
 	// find the node which has the key (via Find) (in reality we'd call FIND on the k-closest, not all)
 	for _, v := range self.Table {
 		for _, b := range v {
-			client, err := rpc.DialHTTP("tcp", fmt.Sprintf("%s:8081", b.Address))
+			client, err := rpc.DialHTTP("tcp", fmt.Sprintf("%s:8080", b.Address))
 			if err != nil {
 				log.Fatal("Error in dialing:", err)
 				return err
@@ -90,7 +90,7 @@ func (n *Node) Owners(oa *OwnerArgs, reply *[]Node) error {
 	// find node with given key
 	for _, v := range self.Table {
 		for _, b := range v {
-			client, err := rpc.DialHTTP("tcp", fmt.Sprintf("%s:8081", b.Address))
+			client, err := rpc.DialHTTP("tcp", fmt.Sprintf("%s:8080", b.Address))
 			if err != nil {
 				log.Fatal("Error in dialing:", err)
 				return err

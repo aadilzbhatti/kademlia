@@ -9,6 +9,7 @@ import (
 
 func main() {
 	go startServer()
+  
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Println("Starting DHT interface")
 

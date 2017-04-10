@@ -31,6 +31,7 @@ func startServer() {
 	}
 	self := initializeNode(nodeId, 10, 8080, hostname)
 	self.Table = bucket
+	fmt.Println(self)
 
 	// set up RPCs
 	go setupRPC()
@@ -63,7 +64,7 @@ func setupRPC() {
 	rpc.Register(node)
 
 	for {
-		l, e := net.Listen("tcp", ":8081")
+		l, e := net.Listen("tcp", fmt.Sprintf("%s:8080", hostname))
 		if e != nil {
 			log.Fatal("Join listen error:", e)
 		}
@@ -73,7 +74,7 @@ func setupRPC() {
 }
 
 func makeJoinCall(self Node, host string) error {
-	client, err := rpc.DialHTTP("tcp", fmt.Sprintf("%s:8081", host))
+	client, err := rpc.DialHTTP("tcp", fmt.Sprintf("%s:8080", host))
 	if err != nil {
 		log.Fatal("Erorr in dialing:", err)
 		return err
