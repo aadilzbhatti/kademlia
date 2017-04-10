@@ -29,7 +29,7 @@ type JoinArgs struct {
 	Id       int
 	Hostname string
 	Port     int
-	NewNode string
+	NewNode  string
 }
 
 type FindArgs struct {
@@ -38,7 +38,7 @@ type FindArgs struct {
 }
 
 type FindReply struct {
-	KVP KV
+	KVP     KV
 	Closest []Node
 }
 

@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"log"
-	"net/rpc"
 	"math"
+	"net/rpc"
 )
 
 func (n *Node) Join(ja *JoinArgs, reply *string) error {
