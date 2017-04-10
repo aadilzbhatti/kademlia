@@ -17,53 +17,46 @@ var lock = &sync.Mutex{}
 var self Node
 
 func main() {
+	// set up node ID
 	fmt.Println("Starting!")
-	var host string = "sp17-cs425-g26-0%d.cs.illinois.edu"
+	host := "sp17-cs425-g26-0%d.cs.illinois.edu"
 	hostname := getHostName()
 	fmt.Println(hostname)
-	barrier.Add(2)
+	bucket := make([][]TableEntry, 10)
 	for i := 1; i < 10; i++ {
 		otherHost := fmt.Sprintf(host, i)
-		if otherHost != hostname {
-			if i < 4 {
-				fmt.Printf("Connecting to node %d\n", i)
-				go connectToHost(otherHost)
-			}
-		} else {
+		if otherHost == hostname {
 			nodeId = i
-		}
-	}
-	barrier.Wait()
-	conn, _ := net.Listen("tcp", hostname)
-	self = initializeNode(nodeId, 10, 8080, hostname)
-	setupJoinRPC()
-	// set up RPC stuff
-	barrier.Add(1)
-	go handleConn(conn)
-	barrier.Wait()
-}
-
-func connectToHost(host string) {
-	for {
-		conn, _ := net.Dial("tcp", host)
-		if conn == nil {
-			continue
-		} else {
-			nodes = append(nodes, conn)
 			break
 		}
 	}
-	defer barrier.Done()
+	self := initializeNode(nodeId, 10, 8080, hostname)
+	self.Table = bucket
+
+	// set up RPCs
+	setupJoinRPC()
+
+	// add nodes {1, 2, 3} \ nodeID to buckets
+	for i := 1; i < 4; i++ {
+		if nodeId != i {
+			err := makeJoinCall(self, fmt.Sprintf(host, i))
+			if err != nil {
+				log.Fatal("Failed to join node:", i)
+			}
+		}
+	}
+
+	// handle connections
+	barrier.Add(1)
+	go handleSelf()
+	barrier.Wait()
 }
 
-func handleConn(ln net.Listener) {
+func handleSelf() {
 	for {
-		conn, _ := ln.Accept()
-		lock.Lock()
-		clients = append(clients, conn)
-		lock.Unlock()
-		// go handleClient(conn)
+		// periodically update k closest nodes for each key with KVPs (replicas)
 	}
+	defer barrier.Done()
 }
 
 func setupJoinRPC() {
@@ -75,4 +68,17 @@ func setupJoinRPC() {
 		log.Fatal("listen error:", e)
 	}
 	go http.Serve(l, nil)
+}
+
+func makeJoinCall(self Node, host string) error {
+	client, err := rpc.DialHTTP("tcp", fmt.Sprintf("%s:8085", host))
+	if err != nil {
+		log.Fatal("Erorr in dialing:", err)
+		return err
+	}
+	ja := JoinArgs{self.Id, self.Address, self.Port}
+	divCall := client.Go("Node.Join", ja, "NEWNODE", nil)
+	reply := <-divCall.Done
+	fmt.Println(reply)
+	return nil
 }

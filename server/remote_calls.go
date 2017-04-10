@@ -32,7 +32,9 @@ func (n *Node) Join(ja *JoinArgs, newNode *string, reply *string) error {
 				}
 				divCall := client.Go("Node.Join", ja, "", nil)
 				replyCall := <-divCall.Done
-				fmt.Println(replyCall)
+				if replyCall == nil {
+					fmt.Println("Yes")
+				}
 			}
 		}
 	}

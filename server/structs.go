@@ -1,9 +1,5 @@
 package main
 
-import (
-	"net"
-)
-
 /**
  * Node structs
  */
@@ -33,7 +29,6 @@ type JoinArgs struct {
 	Id       int
 	Hostname string
 	Port     int
-	Ip       net.IP
 }
 
 type FindArgs struct {
