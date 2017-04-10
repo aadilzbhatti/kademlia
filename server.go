@@ -74,7 +74,7 @@ func setupRPC() {
 }
 
 func makeJoinCall(self Node, host string) error {
-	client, err := rpc.DialHTTP("tcp", fmt.Sprintf("%s:8080", host))
+	client, err := rpc.Dial("tcp", fmt.Sprintf("%s:8080", host))
 	if err != nil {
 		log.Fatal("Erorr in dialing:", err)
 		return err

@@ -9,7 +9,7 @@ import (
 
 func main() {
 	go startServer()
-  
+
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Println("Starting DHT interface")
 
@@ -47,7 +47,9 @@ func main() {
 func runCommand(cmds []string, i int) {
 	if cmds[i] == "SET" {
 		// SET(cmds[i + 1], cmds[i + 2])
-		fmt.Println("RUNNING SET(" + cmds[i+1] + ", " + cmds[i+2] + ")")
+		err := clientSet(cmds[i + 1], cmds[i + 2])
+		fmt.Println(err)
+		// fmt.Println("RUNNING SET(" + cmds[i+1] + ", " + cmds[i+2] + ")")
 	} else if cmds[i] == "GET" {
 		// GET(cmds[i + 1])
 		fmt.Println("RUNNING GET(" + cmds[i+1] + ")")
