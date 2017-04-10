@@ -4,11 +4,10 @@ import (
 	"log"
 	"fmt"
 	"net/rpc"
-	"net"
 )
 
 func clientSet(key string, value string) error {
-	client, err := net.Dial("tcp", fmt.Sprintf("%s:8080", hostname))
+	client, err := rpc.Dial("tcp", fmt.Sprintf("%s:port", hostname))
 	if err != nil {
 		log.Fatal("Could not connect to server:", err)
 		return err
@@ -16,7 +15,7 @@ func clientSet(key string, value string) error {
 	KVP := KV{key, value}
 	sa := SetArgs{KVP}
 	var reply string
-	divCall := client.Go("Node.Set", &sa, &reply)
+	divCall := client.Go("Node.Set", &sa, &reply, nil)
 	replyCall := <-divCall.Done
 	if replyCall.Error != nil {
 		return replyCall.Error

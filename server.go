@@ -14,6 +14,7 @@ var nodes = make([]net.Conn, 10)
 var clients = make([]net.Conn, 10)
 var lock = &sync.Mutex{}
 var self Node
+var port int = 20000
 
 func startServer() {
 	// set up node ID
@@ -29,7 +30,7 @@ func startServer() {
 			break
 		}
 	}
-	self := initializeNode(nodeId, 10, 8080, hostname)
+	self := initializeNode(nodeId, 10, port, hostname)
 	self.Table = bucket
 	fmt.Println(self)
 
@@ -64,7 +65,7 @@ func setupRPC() {
 	rpc.Register(node)
 
 	for {
-		l, e := net.Listen("tcp", fmt.Sprintf("%s:8080", hostname))
+		l, e := net.Listen("tcp", fmt.Sprintf("%s:port", hostname))
 		if e != nil {
 			log.Fatal("Join listen error:", e)
 		}
@@ -74,9 +75,9 @@ func setupRPC() {
 }
 
 func makeJoinCall(self Node, host string) error {
-	client, err := rpc.Dial("tcp", fmt.Sprintf("%s:8080", host))
+	client, err := rpc.Dial("tcp", fmt.Sprintf("%s:port", host))
 	if err != nil {
-		log.Fatal("Erorr in dialing:", err)
+		log.Fatal("Error in dialing:", err)
 		return err
 	}
 
