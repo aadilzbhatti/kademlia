@@ -1,34 +1,72 @@
 package main
 
 import (
-	"fmt"
-	"math"
+	"bytes"
+	"sort"
 )
 
-var alpha int = 3
-
-func initializeRoutingTable(id int, numNodes int) [][]TableEntry {
-	k := int(math.Ceil(math.Log2(float64(numNodes))))
-	buckets := make([][]TableEntry, k)
-	return buckets
+type DHT struct {
+	Rt      *RoutingTable
+	ID      []byte
+	Storage map[string]string // Key Value Store
 }
 
-func initializeNode(id int, numNodes int, port int, address string) Node {
-	routingTable := initializeRoutingTable(id, numNodes)
-	keys := make([]KV, 5)
-	n := Node{routingTable, id, port, address, keys}
-	return n
+func createDHT(id []byte) {
+	dht := &DHT{
+		Rt:      NewRoutingTable(id),
+		ID:      id,
+		Storage: make(map[string]string),
+	}
 }
 
-func (n *Node) findKey(key string) (string, error) {
-	for i := range n.Keys {
-		if n.Keys[i].Key == key {
-			return n.Keys[i].Value, nil
+func (d *DHT) remoteLookup(n *node, target []byte) {
+	// make rpc call
+}
+
+func (d *DHT) lookup(target []byte) {
+	kclosest := d.Rt.getKClosest(target).nodes
+	closest := kclosest[0]
+
+	var seen map[string]bool
+	// K closest nodes on this node.
+	// Now have to query everyone.
+	// Now alpha = 1 so query the first node.
+	var shortlist neighborList
+	shortlist.ID = target
+	shortlist.nodes = kclosest // refine this after every iteration.
+	numresponses := 0
+	i := 0
+	for (numresponses) < ksize && i < len(shortlist) {
+		if seen[string(shortlist[i].ID)] {
+			i++
+			continue
+		}
+
+		seen[string(shortlist[i].ID)] = true
+		i++
+		kclosest_r1 := d.remoteLookup(shortlist[i], target)
+		//check for null
+		numresponses++
+		shortlist.nodes = append(shortlist.nodes, kclosest_r1...)
+		//sort.Sort(shortlist) // now update it with the new kclosest nodes.
+
+		//kclosest = shortlist.nodes[:ksize]
+		// We will get a list of k closest nodes according to
+		// the closest node.
+		// Now check if we found a closer node to the current closest or not.
+		if bytes.Compare(closest.ID, kclosest_r1[0] == 0) {
+			// found the best one
+			//kclosest has the final result now.
+			sort.Sort(shortlist)
+			kclosest = shortlist.nodes[:ksize]
+			return kclosest
+		}
+		// update closest node
+		if calculateDistance(target, kclosest[0]) < calculateDistance(target, closest) {
+			closest = kclosest[0] // update closest
 		}
 	}
-	return "", fmt.Errorf("Could not find key in node")
-}
-
-func (n *Node) storeKVP(KVP KV) {
-	n.Keys = append(n.Keys, KVP)
+	sort.Sort(shortlist)
+	kclosest = shortlist.nodes[:ksize]
+	return kclosest
 }
