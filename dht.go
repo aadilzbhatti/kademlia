@@ -74,11 +74,11 @@ func (d *DHT) lookup(target []byte) []*Node {
 		i++
 		//check for null
 		numresponses++
-		shortlist.nodes = append(shortlist.nodes, kclosest_r1...)
-    for _, v := range shortlist.nodes {
-      fmt.Printf("%v, ", v.ID)
+    for _, v := range kclosest_r1 {
+      if !seen[string(v.ID)] {
+        shortlist.nodes = append(shortlist.nodes, v)
+      }
     }
-    fmt.Println("")
 		//sort.Sort(shortlist) // now update it with the new kclosest nodes.
 
 		//kclosest = shortlist.nodes[:ksize]
