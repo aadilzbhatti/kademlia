@@ -4,6 +4,10 @@ import (
 	"fmt"
 	"log"
 	"net/rpc"
+  "os"
+	"bufio"
+	"strings"
+	"regexp"
 )
 
 func clientSet(key string, value string) error {
@@ -85,6 +89,25 @@ func clientListLocal() error {
 	return nil
 }
 
-func clientBatch() error {
+func clientBatch(fname string) error {
+	r, _ := regexp.Compile("(GET) (.*)|(SET) (.*) (.*)|(LIST_LOCAL)|(OWNERS) (.*)|(BATCH (.*))")
+  if file, err := os.Open(fname); err == nil {
+    defer file.Close()
+    scanner := bufio.NewScanner(file)
+    for scanner.Scan() {
+      line := strings.TrimSpace(scanner.Text())
+			if r.MatchString(line) {
+				res := r.FindStringSubmatch(line)
+				for i := range res {
+					if i > 0 && res[i] != "" {
+						runCommand(res, i)
+						break
+					}
+				}
+			}
+    }
+  } else {
+		return err
+	}
 	return nil
 }
