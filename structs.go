@@ -3,43 +3,36 @@ package main
 /**
  * Node structs
  */
-type TableEntry struct {
-	Id      int
-	Port    int
-	Address string
+
+type node struct {
+	ID   []byte
+	Address   string
+	Port int
+}
+
+type Kbucket struct {
+	Size   int
+	bucket []*node
 }
 
 type KV struct {
-	Key   string
-	Value string
-}
-
-type Node struct {
-	Table   [][]TableEntry
-	Id      int
-	Port    int
-	Address string
-	Keys    []KV
+	Key   []byte
+	Value []byte
 }
 
 /**
  * RPC argument structs
  */
 type JoinArgs struct {
-	Id       int
+	ID       []byte
 	Hostname string
 	Port     int
 	NewNode  string
 }
 
 type FindArgs struct {
-	Key                 string
-	PrevClosestDistance float64
-}
-
-type FindReply struct {
-	KVP     KV
-	Closest []Node
+	Target []byte
+  Node node
 }
 
 type SetArgs struct {
@@ -47,7 +40,7 @@ type SetArgs struct {
 }
 
 type OwnerArgs struct {
-	Key string
+	Key []byte
 }
 
 type ListLocalArgs struct{}

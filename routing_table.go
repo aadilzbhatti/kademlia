@@ -1,51 +1,41 @@
-package dht
+package main
 
 import (
 	"math/big"
-	"net"
 	"sort"
 )
 
+const ksize = 3
+const IDLength = 4
+
 // Contains the implementation of kbuckets and the table itself.
-
-type node struct {
-	ID   []byte
-	IP   net.IP
-	Port int
-}
-
-type Kbucket struct {
-	Size   int
-	bucket []*node
-}
-
-func NewBucket(size int) {
+func NewBucket(size int) *Kbucket {
 	return &Kbucket{
 		Size:   size,
 		bucket: make([]*node, 0),
 	}
 }
 
-func (k *Kbucket) addNode(n *Node) {
+func (k *Kbucket) addNode(n *node) {
 	// check if already exists
 	// if it exists move to tail of the list
-	pos, exists := checkNodeExists(n) // should return pos and bool
+	_, exists := k.checkNodeExists(n) // should return pos and bool
 	if exists {
-		// move to the end.
-		k.bucket = append(k.bucket[:pos], k.bucket[pos+1:])
-		append(k.bucket, n)
+		// // move to the end.
+		// k.bucket = append(k.bucket[:pos], k.bucket[pos+1:])
+		// append(k.bucket, n)
 	} else {
 		if len(k.bucket) == k.Size {
 			// pinging stuff
 		} else {
-			append(k.bucket, n)
+			k.bucket = append(k.bucket, n)
 		}
 	}
 }
 
-func (k *Kbucket) checkNodeExists(n *Node) {
+func (k *Kbucket) checkNodeExists(n *node) (int, bool) {
 	for i := range k.bucket {
-		if k.bucket[i].ID == n.ID {
+		if string(k.bucket[i].ID) == string(n.ID) {
 			return i, true
 		}
 	}
@@ -58,21 +48,25 @@ type RoutingTable struct {
 }
 
 func NewRoutingTable(id []byte) *RoutingTable {
-	l := IDLength * 8
+	var b [IDLength * 8]*Kbucket
+	for i:= 0; i < IDLength * 8; i++ {
+		b[i] = NewBucket(ksize)
+	}
 	rt := &RoutingTable{
 		ID:      id,
-		buckets: [l]*Kbucket{},
+		buckets: b,
 	}
 	return rt
 }
 
 func (rt *RoutingTable) insert(n *node) {
 	bucketIndex := rt.findBucketIndex(n.ID)
-	rt.buckets[bucketIndex].add(n)
+	rt.buckets[bucketIndex].addNode(n)
 }
 
 func (rt *RoutingTable) findBucketIndex(target []byte) int {
 	bucketIndex := getConflictingBit(target, rt.ID)
+	return bucketIndex
 }
 
 func (rt *RoutingTable) getKClosest(target []byte) *neighborList {
@@ -81,42 +75,32 @@ func (rt *RoutingTable) getKClosest(target []byte) *neighborList {
 	closest.ID = target
 	for i := bucketIndex; i >= 0; i-- {
 		// keep going till you find ksize nodes.
-		for j := 0; j < len(rt.buckets[i]); j++ {
+		for j := 0; j < len(rt.buckets[i].bucket); j++ {
 			if closest.Len() >= ksize {
-				return sort.Sort(closest)
+
+				 sort.Sort(closest)
+				 return &closest
 			}
-			closest.nodes = append(closest.nodes, rt.buckets[i][j]) // adding node
+			closest.nodes = append(closest.nodes, rt.buckets[i].bucket[j]) // adding node
 		}
 
 	}
 	// Check Right subtrees now
 	for i := bucketIndex + 1; i < IDLength*8; i++ {
 		// keep going till you find ksize nodes.
-		for j := 0; j < len(rt.buckets[i]); j++ {
+		for j := 0; j < len(rt.buckets[i].bucket); j++ {
 			if closest.Len() >= ksize {
-				return sort.Sort(closest)
+
+				sort.Sort(closest)
+				return &closest
 			}
-			closest.nodes = append(closest.nodes, rt.buckets[i][j]) // adding node
+			closest.nodes = append(closest.nodes, rt.buckets[i].bucket[j]) // adding node
 		}
 
 	}
 
-	return sort.Sort(closest)
-}
-
-func getConflictingBit(id1, id2 []byte) int {
-	for i := 0; i < len(id1); i++ {
-		res := id1[i] ^ id2[i]
-
-		// This is a byte. Need to get bit position.
-		for j := 0; j < 8; j++ {
-			if hasBit(res, uint(7-j)) {
-				return 160 - (8*i + j) - 1
-			}
-
-		}
-	}
-	return 0 // same id
+  sort.Sort(closest)
+  return &closest
 }
 
 //http://stackoverflow.com/questions/23192262/how-would-you-set-and-clear-a-single-bit-in-go
@@ -127,21 +111,21 @@ func hasBit(n int, pos uint) bool {
 }
 
 type neighborList struct {
-	nodes []*nodes
+	nodes []*node
 	ID    []byte // will be the key ID.
 	// Implement len, swap and less functions to get sorting functionality
 }
 
-func (s *neighborList) Len() int {
+func (s neighborList) Len() int {
 	return len(s.nodes)
 }
-func (s *neighborList) Swap(i, j int) {
+func (s neighborList) Swap(i, j int) {
 	s.nodes[i], s.nodes[j] = s.nodes[j], s.nodes[i]
 }
 
-func (s *neighborList) Less(i, j) bool {
-	dist1 := calculateDistance(s.nodes[i], s.ID)
-	dist2 := calculateDistance(s.nodes[j], s.ID)
+func (s neighborList) Less(i, j int) bool {
+	dist1 := calculateDistance(s.nodes[i].ID, s.ID)
+	dist2 := calculateDistance(s.nodes[j].ID, s.ID)
 
 	if dist1.Cmp(dist2) == 1 {
 		return false
@@ -150,8 +134,8 @@ func (s *neighborList) Less(i, j) bool {
 }
 
 func calculateDistance(id1, id2 []byte) *big.Int {
-	a := new(big.Int).setBytes(id1)
-	b := new(big.Int).setBytes(id2)
+	a := new(big.Int).SetBytes(id1)
+	b := new(big.Int).SetBytes(id2)
 	dist := new(big.Int).Xor(a, b)
 	return dist
 }

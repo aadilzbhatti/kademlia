@@ -10,14 +10,11 @@ import (
 )
 
 var barrier sync.WaitGroup
-var nodeId int
-var nodes = make([]net.Conn, 10)
-var clients = make([]net.Conn, 10)
+var nodeId []byte
 var lock = &sync.Mutex{}
-var self Node
+var self DHT
 var port int = 3000
 var myhost string
-var T int = 45
 
 /**
  * Starts up the server allowing for nodes to join the
@@ -30,23 +27,21 @@ func startServer() {
 	host := "sp17-cs425-g26-0%d.cs.illinois.edu"
 	myhost = getHostName()
 	fmt.Println(myhost)
-	bucket := make([][]TableEntry, 10)
 	for i := 1; i < 10; i++ {
 		otherHost := fmt.Sprintf(host, i)
 		if otherHost == myhost {
-			nodeId = i
+			nodeId = []byte(string(i))
 			break
 		}
 	}
-	self = initializeNode(nodeId, 10, port, myhost)
-	self.Table = bucket
+	self = *(createDHT(nodeId))
 
 	// set up RPCs
 	go setupRPC()
 
 	// add nodes {1, 2, 3} \ nodeID to buckets
 	for i := 1; i < 4; i++ {
-		if nodeId != i {
+		if string(nodeId) != string(i) {
 			err := makeJoinCall(self, fmt.Sprintf(host, i))
 			if err != nil {
 				log.Fatal("Failed to join node:", i)
@@ -57,7 +52,7 @@ func startServer() {
 
 	// continuously republish keys
 	barrier.Add(1)
-	go handleSelf()
+	go republishKeys()
 	barrier.Wait()
 }
 
@@ -66,7 +61,7 @@ func startServer() {
  */
 func republishKeys() {
 	for {
-    time.Sleep(T * time.Second)
+    time.Sleep(45 * time.Second)
 		// periodically update k closest nodes for each key with KVPs (replicas)
 	}
 	defer barrier.Done()
@@ -76,8 +71,8 @@ func republishKeys() {
  * Sets up the RPC channel for this node
  */
 func setupRPC() {
-	node := new(Node)
-	rpc.Register(node)
+	dht := new(DHT)
+	rpc.Register(dht)
 	l, e := net.Listen("tcp", ":3000")
 	if e != nil {
 		log.Fatal("Join listen error: ", e)
@@ -89,7 +84,7 @@ func setupRPC() {
 /**
  * Wrapper for a node to join a node at a hostname
  */
-func makeJoinCall(self Node, host string) error {
+func makeJoinCall(self DHT, host string) error {
 	client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", host, port))
 	if err != nil {
 		log.Fatal(err)
@@ -97,17 +92,14 @@ func makeJoinCall(self Node, host string) error {
 	}
 
 	// make the RPC
-	ja := JoinArgs{self.Id, self.Address, self.Port, "NEWNODE"}
-	var reply Node
+	ja := JoinArgs{self.ID, hostname, port, "NEWNODE"}
+	var reply node
 	divCall := client.Go("Node.Join", &ja, &reply, nil)
 	replyCall := <-divCall.Done
 	log.Println(replyCall)
 
 	// insert the new guy into my bucket
-	bucket := getBucket(reply.Id, self.Id)
-	entry := TableEntry{reply.Id, reply.Port, reply.Hostname}
-	lock.Lock()
-	self.Table[bucket] = append(self.Table[bucket], entry)
+	self.Rt.insert(&reply)
 
 	return nil
 }

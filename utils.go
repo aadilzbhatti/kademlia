@@ -3,10 +3,8 @@ package main
 import (
 	"fmt"
 	"hash/fnv"
-	"math"
 	"os/exec"
 	"strings"
-  "net"
 )
 
 /**
@@ -41,20 +39,19 @@ func hash(key string, size int) int {
  *
  * @type {int}
  */
-func getBucket(id1 int, id2 int) int {
-	if id1 == 0 {
-		return 1
-	}
-	maxId := math.Max(float64(id1), float64(id2))
-	numBits := uint(math.Ceil(math.Log2(maxId)))
-	for i := numBits; i > 0; i-- {
-		msb_1 := id1 & (1 << i)
-		msb_2 := id2 & (1 << i)
-		if msb_1 != msb_2 {
-			return int(numBits) - int(i)
+func getConflictingBit(id1, id2 []byte) int {
+	for i := 0; i < len(id1); i++ {
+		res := id1[i] ^ id2[i]
+
+		// This is a byte. Need to get bit position.
+		for j := 0; j < 8; j++ {
+			if hasBit(int(res), uint(7-j)) {
+				return 160 - (8*i + j) - 1
+			}
+
 		}
 	}
-	return int(numBits) - 1
+	return 0 // same id
 }
 
 /**
