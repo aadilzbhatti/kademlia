@@ -81,7 +81,9 @@ func (rt *RoutingTable) getKClosest(target []byte) *neighborList {
 				sort.Sort(closest)
 				return &closest
 			}
-			closest.nodes = append(closest.nodes, rt.buckets[i].bucket[j]) // adding node
+			if rt.buckets[i].bucket[j] != nil {
+				closest.nodes = append(closest.nodes, rt.buckets[i].bucket[j]) // adding node
+			}
 		}
 
 	}
@@ -94,7 +96,9 @@ func (rt *RoutingTable) getKClosest(target []byte) *neighborList {
 				sort.Sort(closest)
 				return &closest
 			}
-			closest.nodes = append(closest.nodes, rt.buckets[i].bucket[j]) // adding node
+			if rt.buckets[i].bucket[j] != nil {
+				closest.nodes = append(closest.nodes, rt.buckets[i].bucket[j]) // adding node
+			}
 		}
 
 	}
