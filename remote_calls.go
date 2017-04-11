@@ -13,6 +13,7 @@ func (n *Node) Join(ja *JoinArgs, reply *string) error {
 	// populate my buckets
 	id := ja.Id
 	bucket := getBucket(id, self.Id)
+	fmt.Printf("%d is the bucket\n", bucket)
 	entry := TableEntry{id, ja.Port, ja.Hostname}
 	for _, v := range self.Table[bucket] {
 		if v.Id == id {
