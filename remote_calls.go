@@ -7,7 +7,7 @@ import (
 	"net/rpc"
 )
 
-func (n *Node) Join(ja *JoinArgs, reply *string) error {
+func (n *Node) Join(ja *JoinArgs, reply *Node) error {
 	if ja.Id == self.Id {
 		return nil
 	}
@@ -16,17 +16,16 @@ func (n *Node) Join(ja *JoinArgs, reply *string) error {
 	// populate my buckets
 	id := ja.Id
 	bucket := getBucket(id, self.Id)
-	fmt.Printf("%d is the bucket\n", bucket)
 	entry := TableEntry{id, ja.Port, ja.Hostname}
 	for _, v := range self.Table[bucket] {
 		if v.Id == id {
-			*reply = "ACK"
+			*reply = self
 		}
 	}
 	lock.Lock()
 	self.Table[bucket] = append(self.Table[bucket], entry)
 	lock.Unlock()
-	*reply = "ACK"
+	*reply = self
 
 	// send a message to the other nodes
 	if ja.NewNode != "" {
@@ -48,8 +47,8 @@ func (n *Node) Join(ja *JoinArgs, reply *string) error {
 			}
 		}
 	}
-
 	log.Printf("Node %d has joined node %d\n", ja.Id, self.Id)
+
 	// replicate keys TODO
 	return nil
 }

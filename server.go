@@ -6,6 +6,7 @@ import (
 	"net"
 	"net/rpc"
 	"sync"
+  "time"
 )
 
 var barrier sync.WaitGroup
@@ -50,14 +51,15 @@ func startServer() {
 		}
 	}
 
-	// handle connections
+	// continuously republish keys
 	barrier.Add(1)
 	go handleSelf()
 	barrier.Wait()
 }
 
-func handleSelf() {
+func republishKeys() {
 	for {
+    time.Sleep()
 		// periodically update k closest nodes for each key with KVPs (replicas)
 	}
 	defer barrier.Done()
@@ -75,18 +77,24 @@ func setupRPC() {
 }
 
 func makeJoinCall(self Node, host string) error {
-	//fmt.Printf("%v is self\n", self)
 	client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", host, port))
 	if err != nil {
 		log.Fatal(err)
 		return err
 	}
 
+	// make the RPC
 	ja := JoinArgs{self.Id, self.Address, self.Port, "NEWNODE"}
-	//fmt.Printf("%v\n", ja)
-	var reply string
+	var reply Node
 	divCall := client.Go("Node.Join", &ja, &reply, nil)
 	replyCall := <-divCall.Done
-	log.Println(replyCall.Reply)
+	log.Println(replyCall)
+
+	// insert the new guy into my bucket
+	bucket := getBucket(reply.Id, self.Id)
+	entry := TableEntry{reply.Id, reply.Port, reply.Hostname}
+	lock.Lock()
+	self.Table[bucket] = append(self.Table[bucket], entry)
+
 	return nil
 }
