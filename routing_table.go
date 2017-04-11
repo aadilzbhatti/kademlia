@@ -30,7 +30,7 @@ func (k *Kbucket) addNode(n *Node) {
 			// pinging stuff
 			k.bucket = k.bucket[1:]
 			k.bucket = append(k.bucket, n)
-		else {
+		} else {
 			k.bucket = append(k.bucket, n)
 		}
 	}
