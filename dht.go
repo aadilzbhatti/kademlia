@@ -65,8 +65,8 @@ func (d *DHT) lookup(target []byte) []*Node {
 		}
 
 		seen[string(shortlist.nodes[i].ID)] = true
-		i++
 		kclosest_r1 := d.remoteLookup(shortlist.nodes[i], target)
+		i++
 		//check for null
 		numresponses++
 		shortlist.nodes = append(shortlist.nodes, kclosest_r1...)
