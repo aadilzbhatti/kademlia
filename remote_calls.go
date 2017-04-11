@@ -78,6 +78,9 @@ func (d *DHT) Find(target *[]byte, reply *KV) error {
 			log.Fatal("Error in getting the key: ", err)
 			continue
 		}
+		if reply.Value != nil {
+			return nil
+		}
 		break
 	}
 	*reply = KV{*target, nil}
