@@ -77,7 +77,7 @@ func (rt *RoutingTable) getKClosest(target []byte) *neighborList {
 		// keep going till you find ksize nodes.
 		for j := 0; j < len(rt.buckets[i].bucket); j++ {
 			if closest.Len() >= ksize {
-
+				fmt.Println(closest)
 				sort.Sort(closest)
 				return &closest
 			}
