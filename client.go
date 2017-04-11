@@ -18,9 +18,9 @@ func main() {
     SET <key> <value>
     OWNERS <key>
     LIST_LOCAL
-    BATCH`
+    BATCH <file_name>`
 	fmt.Println(usage)
-	r, _ := regexp.Compile("(GET) (.*)|(SET) (.*) (.*)|(LIST_LOCAL)|(OWNERS) (.*)|(BATCH)")
+	r, _ := regexp.Compile("(GET) (.*)|(SET) (.*) (.*)|(LIST_LOCAL)|(OWNERS) (.*)|(BATCH (.*))")
 
 	for {
 		text, err := reader.ReadString('\n')
@@ -50,19 +50,26 @@ func runCommand(cmds []string, i int) {
     if err != nil {
 		    fmt.Println(err)
     }
+
 	} else if cmds[i] == "GET" {
     err := clientGet(cmds[i + 1])
     if err != nil {
       fmt.Println("ERROR: ", err)
     }
-	} else if cmds[i] == "LIST_LOCAL" {
-		// LIST_LOCAL()
-		fmt.Println("RUNNING LIST_LOCAL")
+
 	} else if cmds[i] == "OWNERS" {
-		// OWNERS(cmds[i + 1])
-		fmt.Println("RUNNING OWNERS(" + cmds[i+1] + ")")
+		err := clientOwners(cmds[i])
+		if err != nil {
+			fmt.Println("ERROR: ", err)
+		}
+
+	} else if cmds[i] == "LIST_LOCAL" {
+		err := clientListLocal(cmds[i])
+		if err != nil {
+			fmt.Println("ERROR: ", err)
+		}
+
 	} else {
-		// BATCH()
-		fmt.Println("RUNNING BATCH")
+
 	}
 }

@@ -38,9 +38,3 @@ type FindArgs struct {
 type SetArgs struct {
 	KVP KV
 }
-
-type OwnerArgs struct {
-	Key []byte
-}
-
-type ListLocalArgs struct{}

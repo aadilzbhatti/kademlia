@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 	"net/rpc"
 )
 
@@ -38,7 +39,7 @@ func (d *DHT) Join(ja *JoinArgs, reply *Node) error {
 }
 
 func (d *DHT) Set(sa *SetArgs, reply *string) error {
-	// find the Nodewhich has the key (via Find)
+	// find the k closest Nodes which have the key
 	kClosest := self.lookup(sa.KVP.Key)
 	for _, n := range kClosest {
 		fmt.Printf("Id -> %v\n", n.ID)
@@ -80,6 +81,7 @@ func (d *DHT) Find(target *[]byte, reply *KV) error {
 		}
 		break
 	}
+	*reply = KV{*target, nil}
 	return nil
 }
 
@@ -89,36 +91,19 @@ func (d *DHT) GetKVP(key *string, reply *KV) error {
 	return nil
 }
 
-// func (d *DHT) Owners(oa *OwnerArgs, reply *[]Node) error {
-// 	// find Nodewith given key
-// 	for _, v := range self.Table {
-// 		for _, b := range v {
-// 			client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", b.Address, port))
-// 			if err != nil {
-// 				log.Fatal("Error in dialing:", err)
-// 				return err
-// 			}
-//
-// 			fa := FindArgs{oa.Key, math.Inf(1)}
-// 			var fr *FindReply
-// 			divCall := client.Go("Node.Find", &fa, fr, nil)
-// 			replyCall := <-divCall.Done
-// 			fmt.Println(replyCall)
-//
-// 			// if we have found k-closest Nodes, we reply with those Nodes
-// 			if fr != nil {
-// 				*reply = fr.Closest
-// 				return nil
-// 			}
-// 		}
-// 	}
-//
-// 	return nil
-// }
-//
-// func (d *DHT) ListLocal(ll *ListLocalArgs, reply *[]KV) error {
-// 	// reply with all keys in our Node
-// 	*reply = self.Keys
-//
-// 	return nil
-// }
+func (d *DHT) Owners(key *[]byte, reply *[]Node) error {
+	// find Nodes with given key
+	*reply := self.lookup(*key)
+	return nil
+}
+
+func (d *DHT) ListLocal(args *string, reply *[]KV) error {
+	list := make([]KV, 10)
+	for k, v := range self.Storage {
+		list = append(list, KV{[]byte(k), []byte(v)})
+	}
+
+	// reply with all keys in our Node
+	*reply = list
+	return nil
+}
