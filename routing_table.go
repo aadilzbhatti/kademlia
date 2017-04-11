@@ -13,7 +13,7 @@ const IDLength = 4
 func NewBucket(size int) *Kbucket {
 	return &Kbucket{
 		Size:   size,
-		bucket: make([]*Node, 0),
+		bucket: make([]*Node, ksize),
 	}
 }
 
@@ -33,15 +33,15 @@ func (k *Kbucket) addNode(n *Node) {
 		} else {
 			k.bucket = append(k.bucket, n)
 		}
-	}
+	// }
 }
 
 func (k *Kbucket) checkNodeExists(n *Node) (int, bool) {
-	for i := range k.bucket {
-		if string(k.bucket[i].ID) == string(n.ID) {
-			return i, true
-		}
-	}
+	// for i := range k.bucket {
+	// 	if string(k.bucket[i].ID) == string(n.ID) {
+	// 		return i, true
+	// 	}
+	// }
 	return -1, false
 }
 
