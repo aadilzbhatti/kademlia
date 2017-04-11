@@ -9,7 +9,7 @@ import (
 
 func (n *Node) Join(ja *JoinArgs, reply *string) error {
 	fmt.Printf("%v\n", ja)
-	fmt.Printf("%v\n", n)
+	fmt.Printf("%v\n", self)
   log.Printf("Node %d is trying to join node %d\n", ja.Id, ja.HostNode.Id)
 	self := ja.HostNode
 
