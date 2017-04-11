@@ -87,7 +87,21 @@ func (d *DHT) lookup(target []byte) []*Node {
 		if bytes.Compare(closest.ID, kclosest_r1[0].ID) == 0 {
 			// found the best one
 			//kclosest has the final result now.
-			break
+			sort.Sort(shortlist)
+			var m map[string]bool = make(map[string]bool)
+			var flist []*Node
+			for _, n := range shortlist.nodes {
+				if !(m[string(n.ID)]) {
+					flist = append(flist, n)
+					m[string(n.ID)] = true
+				}
+			}
+			if len(flist) < ksize {
+				return flist
+			}
+			kclosest = flist[:ksize]
+			return kclosest
+			//break
 		}
 		// update closest node
 		if calculateDistance(target, kclosest[0].ID).Cmp(calculateDistance(target, closest.ID)) == -1 {
