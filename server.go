@@ -34,7 +34,7 @@ func startServer() {
 			break
 		}
 	}
-	self := initializeNode(nodeId, 10, port, myhost)
+	self = initializeNode(nodeId, 10, port, myhost)
 	self.Table = bucket
 
 	// set up RPCs
@@ -66,19 +66,16 @@ func handleSelf() {
 func setupRPC() {
 	node := new(Node)
 	rpc.Register(node)
-	messageHost := fmt.Sprintf("%s:%d", myhost, port)
-	fmt.Println("this is the", messageHost)
 	l, e := net.Listen("tcp", ":3000")
 	if e != nil {
 		log.Fatal("Join listen error: ", e)
 	}
 
-	for {
-		go rpc.Accept(l)
-	}
+	go rpc.Accept(l)
 }
 
 func makeJoinCall(self Node, host string) error {
+	//fmt.Printf("%v is self\n", self)
 	client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", host, port))
 	if err != nil {
 		log.Fatal(err)
@@ -86,9 +83,10 @@ func makeJoinCall(self Node, host string) error {
 	}
 
 	ja := JoinArgs{self.Id, self.Address, self.Port, "NEWNODE"}
+	//fmt.Printf("%v\n", ja)
 	var reply string
-	divCall := client.Go("Node.Join", ja, &reply, nil)
+	divCall := client.Go("Node.Join", &ja, &reply, nil)
 	replyCall := <-divCall.Done
-	log.Printf("Node %d joined the system: %s\n", self.Id, replyCall.Reply)
+	log.Println(replyCall.Reply)
 	return nil
 }

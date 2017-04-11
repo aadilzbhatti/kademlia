@@ -8,10 +8,12 @@ import (
 )
 
 func (n *Node) Join(ja *JoinArgs, reply *string) error {
-  log.Println("In join ", ja.Id)
+  log.Printf("Node %d is trying to join node %d\n", ja.Id, self.Id)
+
 	// populate my buckets
 	id := ja.Id
 	bucket := getBucket(id, self.Id)
+	fmt.Printf("%d is the bucket\n", bucket)
 	entry := TableEntry{id, ja.Port, ja.Hostname}
 	for _, v := range self.Table[bucket] {
 		if v.Id == id {
@@ -42,6 +44,7 @@ func (n *Node) Join(ja *JoinArgs, reply *string) error {
 		}
 	}
 
+	log.Printf("Node %d has joined node %d\n", ja.Id, self.Id)
 	// replicate keys TODO
 	return nil
 }
