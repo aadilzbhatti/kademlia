@@ -75,7 +75,7 @@ func (d *DHT) lookup(target []byte) []*Node {
 		//check for null
 		numresponses++
 		shortlist.nodes = append(shortlist.nodes, kclosest_r1...)
-    for i, v := range shortlist.nodes {
+    for _, v := range shortlist.nodes {
       fmt.Printf("%v, ", v.ID)
     }
     fmt.Println("")
