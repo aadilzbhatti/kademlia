@@ -33,7 +33,7 @@ func (k *Kbucket) addNode(n *Node) {
 		} else {
 			k.bucket = append(k.bucket, n)
 		}
-	// }
+	}
 }
 
 func (k *Kbucket) checkNodeExists(n *Node) (int, bool) {
