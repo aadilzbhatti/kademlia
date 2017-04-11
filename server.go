@@ -64,8 +64,8 @@ func handleSelf() {
 }
 
 func setupRPC() {
-	node := new(Node)
-	rpc.Register(node)
+	//node := new(Node)
+	rpc.Register(&self)
 	l, e := net.Listen("tcp", ":3000")
 	if e != nil {
 		log.Fatal("Join listen error: ", e)
