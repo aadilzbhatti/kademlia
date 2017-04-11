@@ -17,9 +17,13 @@ var lock = &sync.Mutex{}
 var self Node
 var port int = 3000
 var myhost string
+var T int = 45
 
+/**
+ * Starts up the server allowing for nodes to join the
+ * distributed hash table
+ */
 func startServer() {
-  // port = getPort()
 
 	// set up node ID
 	fmt.Println("Starting!")
@@ -57,14 +61,20 @@ func startServer() {
 	barrier.Wait()
 }
 
+/**
+ * Republishes keys every T time units
+ */
 func republishKeys() {
 	for {
-    time.Sleep()
+    time.Sleep(T * time.Second)
 		// periodically update k closest nodes for each key with KVPs (replicas)
 	}
 	defer barrier.Done()
 }
 
+/**
+ * Sets up the RPC channel for this node
+ */
 func setupRPC() {
 	node := new(Node)
 	rpc.Register(node)
@@ -76,6 +86,9 @@ func setupRPC() {
 	go rpc.Accept(l)
 }
 
+/**
+ * Wrapper for a node to join a node at a hostname
+ */
 func makeJoinCall(self Node, host string) error {
 	client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", host, port))
 	if err != nil {
