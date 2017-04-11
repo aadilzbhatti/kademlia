@@ -51,8 +51,10 @@ func runCommand(cmds []string, i int) {
 		    fmt.Println(err)
     }
 	} else if cmds[i] == "GET" {
-		// GET(cmds[i + 1])
-		fmt.Println("RUNNING GET(" + cmds[i+1] + ")")
+    err := clientGet(cmds[i + 1])
+    if err != nil {
+      fmt.Println("ERROR: ", err)
+    }
 	} else if cmds[i] == "LIST_LOCAL" {
 		// LIST_LOCAL()
 		fmt.Println("RUNNING LIST_LOCAL")
