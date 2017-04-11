@@ -8,7 +8,7 @@ import (
 )
 
 func (n *Node) Join(ja *JoinArgs, reply *string) error {
-  log.Printf("Node %d is trying to join node %d\n", ja.Id, self.Id)
+  log.Printf("Node %d is trying to join node %d, %v\n", ja.Id, self.Id, self)
 	// populate my buckets
 	id := ja.Id
 	bucket := getBucket(id, self.Id)

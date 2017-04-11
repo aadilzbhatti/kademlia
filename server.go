@@ -66,8 +66,6 @@ func handleSelf() {
 func setupRPC() {
 	node := new(Node)
 	rpc.Register(node)
-	messageHost := fmt.Sprintf("%s:%d", myhost, port)
-	fmt.Println("this is the", messageHost)
 	l, e := net.Listen("tcp", ":3000")
 	if e != nil {
 		log.Fatal("Join listen error: ", e)
@@ -77,17 +75,16 @@ func setupRPC() {
 }
 
 func makeJoinCall(self Node, host string) error {
+	fmt.Printf("%v is self\n", self)
 	client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", host, port))
 	if err != nil {
 		log.Fatal(err)
 		return err
 	}
 
-	log.Printf("%v\n", client)
-
 	ja := JoinArgs{self.Id, self.Address, self.Port, "NEWNODE"}
 	var reply string
-	divCall := client.Go("Node.Join", ja, &reply, nil)
+	divCall := client.Go("Node.Join", &ja, &reply, nil)
 	replyCall := <-divCall.Done
 	log.Printf("Node %d joined the system: %s\n", self.Id, replyCall.Reply)
 	return nil
