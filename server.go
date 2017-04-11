@@ -94,7 +94,7 @@ func makeJoinCall(self DHT, host string) error {
 	// make the RPC
 	ja := JoinArgs{self.ID, hostname, port, "NEWNODE"}
 	var reply node
-	divCall := client.Go("Node.Join", &ja, &reply, nil)
+	divCall := client.Go("DHT.Join", &ja, &reply, nil)
 	replyCall := <-divCall.Done
 	log.Println(replyCall)
 
