@@ -73,6 +73,8 @@ func republishKeys() {
 func setupRPC() {
 	dht := new(DHT)
 	rpc.Register(dht)
+	n := new(node)
+	rpc.Register(n)
 	l, e := net.Listen("tcp", ":3000")
 	if e != nil {
 		log.Fatal("Join listen error: ", e)
