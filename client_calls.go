@@ -77,9 +77,7 @@ func clientListLocal() error {
 	if reply != nil {
 		log.Printf("LISTING ALL KEYS AT NODE %d\n", self.ID)
 		for _, v := range reply {
-			if string(v.Key) != "" {
-				log.Printf("%s=%s\n", string(v.Key), string(v.Value))
-			}
+			log.Printf("%s=%s\n", string(v.Key), string(v.Value))
 		}
 	} else {
 		log.Printf("No keys located at this node.")
