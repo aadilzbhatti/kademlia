@@ -72,7 +72,7 @@ func republishKeys() {
 			var reply string
 			err = client.Call("DHT.Set", &sa, &reply)
 			if err != nil {
-				log.Println("Failed to republish on node %d\n", nodeId)
+				log.Printf("Failed to republish on node %d\n", nodeId)
 			}
     }
 	}

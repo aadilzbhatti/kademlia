@@ -68,7 +68,8 @@ func clientOwners(key string) error {
 func clientListLocal() error {
 	client, _ := rpc.Dial("tcp", fmt.Sprintf("%s:%d", hostname, port))
 	var reply []KV
-	err := client.Call("DHT.ListLocal", nil, &reply)
+	var args string
+	err := client.Call("DHT.ListLocal", &args, &reply)
 	if err != nil {
 		log.Println("Error in list local: ", err)
 		return err
