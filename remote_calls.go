@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 	"net/rpc"
 )
 
@@ -91,9 +90,9 @@ func (d *DHT) GetKVP(key *string, reply *KV) error {
 	return nil
 }
 
-func (d *DHT) Owners(key *[]byte, reply *[]Node) error {
+func (d *DHT) Owners(key *[]byte, reply *[]*Node) error {
 	// find Nodes with given key
-	*reply := self.lookup(*key)
+	*reply = self.lookup(*key)
 	return nil
 }
 

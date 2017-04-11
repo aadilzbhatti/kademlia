@@ -48,7 +48,7 @@ func clientGet(key string) error {
 func clientOwners(key string) error {
 	client, _ := rpc.Dial("tcp", fmt.Sprintf("%s:%d", hostname, port))
 	target := []byte(key)
-	var reply []node
+	var reply []Node
 	err := client.Call("DHT.Owners", &target, &reply)
 	if err != nil {
 		log.Fatal("Error in owners: ", err)
@@ -62,12 +62,17 @@ func clientOwners(key string) error {
 	} else {
 		log.Printf("No owners for this key.")
 	}
+	return nil
 }
 
 func clientListLocal() error {
 	client, _ := rpc.Dial("tcp", fmt.Sprintf("%s:%d", hostname, port))
 	var reply []KV
 	err := client.Call("DHT.ListLocal", nil, &reply)
+	if err != nil {
+		log.Fatal("Error in list local: ", err)
+		return err
+	}
 	if reply != nil {
 		log.Printf("LISTING ALL KEYS AT NODE %d\n", self.ID)
 		for _, v := range reply {
@@ -76,8 +81,9 @@ func clientListLocal() error {
 	} else {
 		log.Printf("No keys located at this node.")
 	}
+	return nil
 }
 
 func clientBatch() error {
-	
+	return nil
 }

@@ -58,13 +58,13 @@ func runCommand(cmds []string, i int) {
     }
 
 	} else if cmds[i] == "OWNERS" {
-		err := clientOwners(cmds[i])
+		err := clientOwners(cmds[i + 1])
 		if err != nil {
 			fmt.Println("ERROR: ", err)
 		}
 
 	} else if cmds[i] == "LIST_LOCAL" {
-		err := clientListLocal(cmds[i])
+		err := clientListLocal()
 		if err != nil {
 			fmt.Println("ERROR: ", err)
 		}
