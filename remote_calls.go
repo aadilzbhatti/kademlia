@@ -14,7 +14,7 @@ func (d *DHT) Join(ja *JoinArgs, reply *Node) error {
 
 	// populate my buckets
 	n := Node{ja.ID, ja.Hostname, ja.Port}
-	myself := Node{self.ID, fmt.Sprintf("sp17-cs425-g26-0%d.cs.illinois.edu", self.ID), port}
+	myself := Node{self.ID, fmt.Sprintf("sp17-cs425-g26-0%d.cs.illinois.edu", self.ID[0]), port}
 	self.Rt.insert(&n)
 	*reply = myself
 
