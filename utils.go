@@ -46,7 +46,7 @@ func getConflictingBit(id1, id2 []byte) int {
 		// This is a byte. Need to get bit position.
 		for j := 0; j < 8; j++ {
 			if hasBit(int(res), uint(7-j)) {
-				return 160 - (8*i + j) - 1
+				return 32 - (8*i + j) - 1
 			}
 
 		}
