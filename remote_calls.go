@@ -64,6 +64,31 @@ func (d *DHT) StoreKVP(sa *SetArgs, reply *string) error {
 	return nil
 }
 
+func (d *DHT) Find(target *[]byte, reply *KV) error {
+	nodes := self.lookup(*target)
+	for _, v := range nodes {
+		client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", v.Address, port))
+		if err != nil {
+			log.Fatal("Error in find RPC: ", err)
+			continue
+		}
+		key := string(*target)
+		err = client.Call("DHT.GetKVP", &key, &reply)
+		if err != nil {
+			log.Fatal("Error in getting the key: ", err)
+			continue
+		}
+		break
+	}
+	return nil
+}
+
+func (d *DHT) GetKVP(key *string, reply *KV) error {
+	value := self.Storage[*key]
+	*reply = KV{[]byte(*key), []byte(value)}
+	return nil
+}
+
 // func (d *DHT) Owners(oa *OwnerArgs, reply *[]Node) error {
 // 	// find Nodewith given key
 // 	for _, v := range self.Table {
