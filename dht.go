@@ -67,6 +67,10 @@ func (d *DHT) lookup(target []byte) []*Node {
 
 		seen[string(shortlist.nodes[i].ID)] = true
 		kclosest_r1 := d.remoteLookup(shortlist.nodes[i], target)
+		if kclosest_r1 == nil {
+			i++
+			continue
+		}
 		i++
 		//check for null
 		numresponses++
