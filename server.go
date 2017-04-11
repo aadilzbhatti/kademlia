@@ -43,7 +43,7 @@ func startServer() {
 		if string(nodeId) != string(i) {
 			err := makeJoinCall(self, fmt.Sprintf(host, i))
 			if err != nil {
-				log.Fatal("Failed to join node:", i)
+				log.Println("Failed to join node:", i)
 			}
 			log.Println("Joined in!")
 		}
@@ -72,7 +72,7 @@ func republishKeys() {
 			var reply string
 			err = client.Call("DHT.Set", &sa, &reply)
 			if err != nil {
-				log.Fatal("Failed to republish on node %d\n", nodeId)
+				log.Println("Failed to republish on node %d\n", nodeId)
 			}
     }
 	}
@@ -88,7 +88,7 @@ func setupRPC() {
 
 	l, e := net.Listen("tcp", ":3000")
 	if e != nil {
-		log.Fatal("Join listen error: ", e)
+		log.Println("Join listen error: ", e)
 	}
 
 	go rpc.Accept(l)
@@ -100,7 +100,7 @@ func setupRPC() {
 func makeJoinCall(self DHT, host string) error {
 	client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", host, port))
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return err
 	}
 

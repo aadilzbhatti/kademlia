@@ -9,7 +9,7 @@ import (
 func clientSet(key string, value string) error {
 	client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", hostname, port))
 	if err != nil {
-		log.Fatal("Could not connect to server:", err)
+		log.Println("Could not connect to server:", err)
 		return err
 	}
 	KVP := KV{[]byte(key), []byte(value)}
@@ -27,14 +27,14 @@ func clientSet(key string, value string) error {
 func clientGet(key string) error {
   client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", hostname, port))
   if err != nil {
-    log.Fatal("Could not connect to server:", err)
+    log.Println("Could not connect to server:", err)
     return err
   }
 	target := []byte(key)
 	var reply KV
 	err = client.Call("DHT.Find", &target, &reply)
 	if err != nil {
-		log.Fatal("Error in find: ", err)
+		log.Println("Error in find: ", err)
 		return err
 	}
 	if reply.Value != nil {
@@ -51,7 +51,7 @@ func clientOwners(key string) error {
 	var reply []Node
 	err := client.Call("DHT.Owners", &target, &reply)
 	if err != nil {
-		log.Fatal("Error in owners: ", err)
+		log.Println("Error in owners: ", err)
 		return err
 	}
 	if reply != nil {
@@ -70,7 +70,7 @@ func clientListLocal() error {
 	var reply []KV
 	err := client.Call("DHT.ListLocal", nil, &reply)
 	if err != nil {
-		log.Fatal("Error in list local: ", err)
+		log.Println("Error in list local: ", err)
 		return err
 	}
 	if reply != nil {

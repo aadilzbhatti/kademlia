@@ -24,7 +24,7 @@ func (d *DHT) Join(ja *JoinArgs, reply *Node) error {
 		for _, n := range kClosest {
 			client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", n.Address, port))
 			if err != nil {
-				log.Fatal("Error in dial: ", err)
+				log.Println("Error in dial: ", err)
 				return err
 			}
 			var reply Node
@@ -44,7 +44,7 @@ func (d *DHT) Set(sa *SetArgs, reply *string) error {
 		fmt.Printf("Id -> %v\n", n.ID)
 		client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", n.Address, port))
 		if err != nil {
-			log.Fatal("Error in dial: ", err)
+			log.Println("Error in dial: ", err)
 			return err
 		}
 		var reply string
@@ -69,13 +69,13 @@ func (d *DHT) Find(target *[]byte, reply *KV) error {
 	for _, v := range nodes {
 		client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", v.Address, port))
 		if err != nil {
-			log.Fatal("Error in find RPC: ", err)
+			log.Println("Error in find RPC: ", err)
 			continue
 		}
 		key := string(*target)
 		err = client.Call("DHT.GetKVP", &key, &reply)
 		if err != nil {
-			log.Fatal("Error in getting the key: ", err)
+			log.Println("Error in getting the key: ", err)
 			continue
 		}
 		if reply.Value != nil {

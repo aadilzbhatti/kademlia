@@ -28,13 +28,13 @@ func (d *DHT) remoteLookup(n *Node, target []byte) []*Node {
 	fmt.Printf("%s:%d\n", n.Address, port)
 	client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", n.Address, port))
 	if err != nil {
-		log.Fatal("Error in remote lookup: ", err)
+		log.Println("Error in remote lookup: ", err)
 		return nil
 	}
 	var reply []*Node
 	err = client.Call("DHT.KClosestRPC", &target, &reply)
 	if err != nil {
-		log.Fatal("Error in calling RPC: ", err)
+		log.Println("Error in calling RPC: ", err)
 		return nil
 	}
 	return reply
