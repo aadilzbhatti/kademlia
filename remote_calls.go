@@ -8,6 +8,7 @@ import (
 )
 
 func (n *Node) Join(ja *JoinArgs, reply *string) error {
+  log.Println("In join ", ja.Id)
 	// populate my buckets
 	id := ja.Id
 	bucket := getBucket(id, self.Id)
