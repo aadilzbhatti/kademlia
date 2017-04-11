@@ -8,6 +8,9 @@ import (
 )
 
 func (n *Node) Join(ja *JoinArgs, reply *string) error {
+	if ja.Id == self.Id {
+		return nil
+	}
   log.Printf("Node %d is trying to join node %d\n", ja.Id, self.Id)
 
 	// populate my buckets
@@ -31,15 +34,17 @@ func (n *Node) Join(ja *JoinArgs, reply *string) error {
 		na.NewNode = ""
 		for _, v := range self.Table { // in reality we'd send this message to our k-closest, not all
 			for _, b := range v {
-				client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", b.Address, port))
-				if err != nil {
-					log.Fatal("Error in dialing:", err)
-					return err
+				if b.Address != self.Address {
+					client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", b.Address, port))
+					if err != nil {
+						log.Fatal("Error in dialing:", err)
+						return err
+					}
+					var remoteReply string
+					divCall := client.Go("Node.Join", &na, &remoteReply, nil)
+					replyCall := <-divCall.Done
+					fmt.Println(replyCall)
 				}
-				var remoteReply string
-				divCall := client.Go("Node.Join", &na, &remoteReply, nil)
-				replyCall := <-divCall.Done
-				fmt.Println(replyCall)
 			}
 		}
 	}

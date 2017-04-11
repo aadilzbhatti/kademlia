@@ -28,7 +28,6 @@ func startServer() {
 	bucket := make([][]TableEntry, 10)
 	for i := 1; i < 10; i++ {
 		otherHost := fmt.Sprintf(host, i)
-		fmt.Println(myhost)
 		if otherHost == myhost {
 			nodeId = i
 			break
@@ -47,6 +46,7 @@ func startServer() {
 			if err != nil {
 				log.Fatal("Failed to join node:", i)
 			}
+			log.Println("Joined in!")
 		}
 	}
 
