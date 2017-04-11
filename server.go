@@ -60,8 +60,21 @@ func startServer() {
  */
 func republishKeys() {
 	for {
-		time.Sleep(45 * time.Second)
+		time.Sleep(20 * time.Second)
+
 		// periodically update k closest nodes for each key with KVPs (replicas)
+    client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", hostname, port))
+    if err != nil {
+      continue
+    }
+    for k, v := range self.Storage {
+      sa := SetArgs{KV{[]byte(k), []byte(v)}}
+			var reply string
+			err = client.Call("DHT.Set", &sa, &reply)
+			if err != nil {
+				log.Fatal("Failed to republish on node %d\n", nodeId)
+			}
+    }
 	}
 	defer barrier.Done()
 }
