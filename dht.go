@@ -49,7 +49,7 @@ func (d *DHT) lookup(target []byte) []*Node {
 	kclosest := d.Rt.getKClosest(target).nodes
 	closest := kclosest[0]
 
-	var seen map[string]bool
+	seen := make(map[string]bool)
 	// K closest nodes on this node.
 	// Now have to query everyone.
 	// Now alpha = 1 so query the first node.
