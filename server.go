@@ -6,7 +6,7 @@ import (
 	"net"
 	"net/rpc"
 	"sync"
-  "time"
+	"time"
 )
 
 var barrier sync.WaitGroup
@@ -61,7 +61,7 @@ func startServer() {
  */
 func republishKeys() {
 	for {
-    time.Sleep(45 * time.Second)
+		time.Sleep(45 * time.Second)
 		// periodically update k closest nodes for each key with KVPs (replicas)
 	}
 	defer barrier.Done()

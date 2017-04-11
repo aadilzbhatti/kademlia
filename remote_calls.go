@@ -10,12 +10,12 @@ func (d *DHT) Join(ja *JoinArgs, reply *node) error {
 	if string(ja.ID) == string(self.ID) {
 		return nil
 	}
-  log.Printf("Node %v is trying to join node %v\n", ja.ID, self.ID)
+	log.Printf("Node %v is trying to join node %v\n", ja.ID, self.ID)
 
 	// populate my buckets
-  n := node{ja.ID, ja.Hostname, ja.Port}
+	n := node{ja.ID, ja.Hostname, ja.Port}
 	myself := node{self.ID, fmt.Sprintf("sp17-cs425-g26-0%d.cs.illinois.edu", self.ID), port}
-  self.Rt.insert(&n)
+	self.Rt.insert(&n)
 	*reply = myself
 
 	// send a message to the other nodes

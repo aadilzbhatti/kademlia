@@ -5,9 +5,9 @@ package main
  */
 
 type node struct {
-	ID   []byte
-	Address   string
-	Port int
+	ID      []byte
+	Address string
+	Port    int
 }
 
 type Kbucket struct {
@@ -32,7 +32,7 @@ type JoinArgs struct {
 
 type FindArgs struct {
 	Target []byte
-  Node node
+	Node   node
 }
 
 type SetArgs struct {

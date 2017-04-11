@@ -49,7 +49,7 @@ type RoutingTable struct {
 
 func NewRoutingTable(id []byte) *RoutingTable {
 	var b [IDLength * 8]*Kbucket
-	for i:= 0; i < IDLength * 8; i++ {
+	for i := 0; i < IDLength*8; i++ {
 		b[i] = NewBucket(ksize)
 	}
 	rt := &RoutingTable{
@@ -78,8 +78,8 @@ func (rt *RoutingTable) getKClosest(target []byte) *neighborList {
 		for j := 0; j < len(rt.buckets[i].bucket); j++ {
 			if closest.Len() >= ksize {
 
-				 sort.Sort(closest)
-				 return &closest
+				sort.Sort(closest)
+				return &closest
 			}
 			closest.nodes = append(closest.nodes, rt.buckets[i].bucket[j]) // adding node
 		}
@@ -99,8 +99,8 @@ func (rt *RoutingTable) getKClosest(target []byte) *neighborList {
 
 	}
 
-  sort.Sort(closest)
-  return &closest
+	sort.Sort(closest)
+	return &closest
 }
 
 //http://stackoverflow.com/questions/23192262/how-would-you-set-and-clear-a-single-bit-in-go

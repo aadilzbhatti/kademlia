@@ -2,10 +2,10 @@ package main
 
 import (
 	"bytes"
-	"sort"
-	"net/rpc"
 	"fmt"
 	"log"
+	"net/rpc"
+	"sort"
 )
 
 type DHT struct {
