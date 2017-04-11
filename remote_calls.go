@@ -41,6 +41,7 @@ func (d *DHT) Set(sa *SetArgs, reply *string) error {
 	// find the Nodewhich has the key (via Find)
 	kClosest := self.lookup(sa.KVP.Key)
 	for _, n := range kClosest {
+		fmt.Printf("Id -> %v\n", n.ID)
 		client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", n.Address, port))
 		if err != nil {
 			log.Fatal("Error in dial: ", err)
