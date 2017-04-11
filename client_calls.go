@@ -32,7 +32,7 @@ func clientGet(key string) error {
   }
 	target := []byte(key)
 	var reply string
-	err = client.Call("DHT.Get", &target, &reply)
+	err = client.Call("DHT.Find", &target, &reply)
 	if err != nil {
 		log.Fatal("Error in find: ", err)
 		return err
