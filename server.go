@@ -73,9 +73,7 @@ func setupRPC() {
 		log.Fatal("Join listen error: ", e)
 	}
 
-	for {
-		go rpc.Accept(l)
-	}
+	go rpc.Accept(l)
 }
 
 func makeJoinCall(self Node, host string) error {
@@ -84,6 +82,8 @@ func makeJoinCall(self Node, host string) error {
 		log.Fatal(err)
 		return err
 	}
+
+	log.Printf("%v\n", client)
 
 	ja := JoinArgs{self.Id, self.Address, self.Port, "NEWNODE"}
 	var reply string
