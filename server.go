@@ -14,7 +14,7 @@ var nodeId []byte
 var lock = &sync.Mutex{}
 var self DHT
 var port int = 3000
-var myhost string
+var hostname string
 
 /**
  * Starts up the server allowing for nodes to join the
@@ -22,14 +22,13 @@ var myhost string
  */
 func startServer() {
 
-	// set up node ID
+	// set up NodeID
 	fmt.Println("Starting!")
 	host := "sp17-cs425-g26-0%d.cs.illinois.edu"
-	myhost = getHostName()
-	fmt.Println(myhost)
+	hostname = getHostName()
 	for i := 1; i < 10; i++ {
 		otherHost := fmt.Sprintf(host, i)
-		if otherHost == myhost {
+		if otherHost == hostname {
 			nodeId = []byte(string(i))
 			break
 		}
@@ -73,8 +72,9 @@ func republishKeys() {
 func setupRPC() {
 	dht := new(DHT)
 	rpc.Register(dht)
-	n := new(node)
+	n := new(Node)
 	rpc.Register(n)
+
 	l, e := net.Listen("tcp", ":3000")
 	if e != nil {
 		log.Fatal("Join listen error: ", e)
@@ -84,7 +84,7 @@ func setupRPC() {
 }
 
 /**
- * Wrapper for a node to join a node at a hostname
+ * Wrapper for a Nodeto join a Nodeat a hostname
  */
 func makeJoinCall(self DHT, host string) error {
 	client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", host, port))
@@ -95,7 +95,7 @@ func makeJoinCall(self DHT, host string) error {
 
 	// make the RPC
 	ja := JoinArgs{self.ID, hostname, port, "NEWNODE"}
-	var reply node
+	var reply Node
 	divCall := client.Go("DHT.Join", &ja, &reply, nil)
 	replyCall := <-divCall.Done
 	log.Println(replyCall)

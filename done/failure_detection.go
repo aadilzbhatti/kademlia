@@ -63,7 +63,7 @@ func failureDetection(callback failureCallback) {
 	time.Sleep(10 * time.Second)
 	numNodes = len(failureServers)
 	for {
-		failureServers[failureNode-1].Failed = false // our node has not failed if we are here
+		failureServers[failureNode-1].Failed = false // our Nodehas not failed if we are here
 		gossipIdx := rand.Intn(numNodes)             // pick a random node
 		if gossipIdx == failureNode-1 {
 			continue
@@ -106,8 +106,8 @@ func writeBuf(gossipMember Failure, callback failureCallback) {
 	err := enc.Encode(failureServers)
 	if err != nil {
 		failureServers[gossipMember.Id-1].Failed = true
-		fmt.Printf("%v - Node %d has failed\n", (time.Now().UnixNano() / int64(time.Millisecond)), gossipMember.Id)
-		msg := fmt.Sprintf("Node %d has failed\n", gossipMember.Id)
+		fmt.Printf("%v - Node%d has failed\n", (time.Now().UnixNano() / int64(time.Millisecond)), gossipMember.Id)
+		msg := fmt.Sprintf("Node%d has failed\n", gossipMember.Id)
 		handleFailedNode(gossipMember.Id, callback)
 		writeToServers(msg)
 	}
@@ -127,8 +127,8 @@ func readBuf(self Failure, callback failureCallback) {
 		diff := time.Now().Unix() - failureServers[i].TimeSincePing
 		if diff > int64(T_fail) && !failureServers[i].Failed {
 			failureServers[i].Failed = true
-			fmt.Printf("%v - Node %d has failed\n", (time.Now().UnixNano() / int64(time.Millisecond)), failureServers[i].Id)
-			msg := fmt.Sprintf("Node %d has failed\n", failureServers[i].Id)
+			fmt.Printf("%v - Node%d has failed\n", (time.Now().UnixNano() / int64(time.Millisecond)), failureServers[i].Id)
+			msg := fmt.Sprintf("Node%d has failed\n", failureServers[i].Id)
 			writeToServers(msg)
 			go handleFailedNode(i, callback)
 		}
@@ -138,7 +138,7 @@ func readBuf(self Failure, callback failureCallback) {
 	failureMutex.Unlock()
 }
 
-func handleFailedNode(node int, callback failureCallback) {
+func handleFailedNode(Nodeint, callback failureCallback) {
 	time.Sleep(time.Duration(T_cleanup) * time.Millisecond)
 	callback(node)
 	fmt.Println("Removed node", node)
@@ -204,7 +204,7 @@ func setUpSelf(nodeNum int, serverName string) Failure {
 	return Failure{nodeNum, 0, time.Now().Unix(), false}
 }
 
-func connectToFailureServer(node string, hostname string, nodeNum int, self bool) {
+func connectToFailureServer(Nodestring, hostname string, nodeNum int, self bool) {
 	if self {
 		failureMutex.Lock()
 		ret := setUpSelf(nodeNum, node)

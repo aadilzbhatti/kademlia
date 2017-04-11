@@ -12,11 +12,11 @@ const IDLength = 4
 func NewBucket(size int) *Kbucket {
 	return &Kbucket{
 		Size:   size,
-		bucket: make([]*node, 0),
+		bucket: make([]*Node, 0),
 	}
 }
 
-func (k *Kbucket) addNode(n *node) {
+func (k *Kbucket) addNode(n *Node) {
 	// check if already exists
 	// if it exists move to tail of the list
 	_, exists := k.checkNodeExists(n) // should return pos and bool
@@ -33,7 +33,7 @@ func (k *Kbucket) addNode(n *node) {
 	}
 }
 
-func (k *Kbucket) checkNodeExists(n *node) (int, bool) {
+func (k *Kbucket) checkNodeExists(n *Node) (int, bool) {
 	for i := range k.bucket {
 		if string(k.bucket[i].ID) == string(n.ID) {
 			return i, true
@@ -59,7 +59,7 @@ func NewRoutingTable(id []byte) *RoutingTable {
 	return rt
 }
 
-func (rt *RoutingTable) insert(n *node) {
+func (rt *RoutingTable) insert(n *Node) {
 	bucketIndex := rt.findBucketIndex(n.ID)
 	rt.buckets[bucketIndex].addNode(n)
 }
@@ -111,7 +111,7 @@ func hasBit(n int, pos uint) bool {
 }
 
 type neighborList struct {
-	nodes []*node
+	nodes []*Node
 	ID    []byte // will be the key ID.
 	// Implement len, swap and less functions to get sorting functionality
 }

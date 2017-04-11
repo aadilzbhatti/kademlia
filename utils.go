@@ -33,7 +33,7 @@ func hash(key string, size int) int {
 }
 
 /**
- * Returns the bucket that node with id=id2
+ * Returns the bucket that Nodewith id=id2
  * would be in for the routing table of node
  * with id=id1
  *

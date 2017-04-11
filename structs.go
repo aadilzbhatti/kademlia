@@ -1,10 +1,10 @@
 package main
 
 /**
- * Node structs
+ * Nodestructs
  */
 
-type node struct {
+type Node struct {
 	ID      []byte
 	Address string
 	Port    int
@@ -12,7 +12,7 @@ type node struct {
 
 type Kbucket struct {
 	Size   int
-	bucket []*node
+	bucket []*Node
 }
 
 type KV struct {
@@ -32,7 +32,7 @@ type JoinArgs struct {
 
 type FindArgs struct {
 	Target []byte
-	Node   node
+	Node   Node
 }
 
 type SetArgs struct {
