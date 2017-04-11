@@ -31,12 +31,12 @@ func clientGet(key string) error {
     return err
   }
 	target := []byte(key)
-	var reply string
+	var reply KV
 	err = client.Call("DHT.Find", &target, &reply)
 	if err != nil {
 		log.Fatal("Error in find: ", err)
 		return err
 	}
-	log.Printf("FOUND %s=%s\n", key, string(reply))
+	log.Printf("FOUND %s=%s\n", key, string(reply.Value))
 	return nil
 }
