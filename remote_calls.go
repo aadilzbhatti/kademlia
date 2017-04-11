@@ -8,8 +8,6 @@ import (
 )
 
 func (n *Node) Join(ja *JoinArgs, reply *string) error {
-	fmt.Printf("%v\n", ja)
-	fmt.Printf("%v\n", self)
   log.Printf("Node %d is trying to join node %d\n", ja.Id, self.Id)
 
 	// populate my buckets
@@ -45,6 +43,7 @@ func (n *Node) Join(ja *JoinArgs, reply *string) error {
 		}
 	}
 
+	log.Printf("Node %d has joined node %d\n", ja.Id, self.Id)
 	// replicate keys TODO
 	return nil
 }
