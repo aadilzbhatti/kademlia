@@ -46,10 +46,10 @@ func main() {
 
 func runCommand(cmds []string, i int) {
 	if cmds[i] == "SET" {
-		// SET(cmds[i + 1], cmds[i + 2])
 		err := clientSet(cmds[i+1], cmds[i+2])
-		fmt.Println(err)
-		// fmt.Println("RUNNING SET(" + cmds[i+1] + ", " + cmds[i+2] + ")")
+    if err != nil {
+		    fmt.Println(err)
+    }
 	} else if cmds[i] == "GET" {
 		// GET(cmds[i + 1])
 		fmt.Println("RUNNING GET(" + cmds[i+1] + ")")
