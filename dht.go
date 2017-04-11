@@ -83,11 +83,11 @@ func (d *DHT) lookup(target []byte) []*Node {
 		i++
 		//check for null
 		numresponses++
-    for _, v := range kclosest_r1 {
-      if !seen[string(v.ID)] {
-        shortlist.nodes = append(shortlist.nodes, v)
-      }
-    }
+		for _, v := range kclosest_r1 {
+			if !seen[string(v.ID)] {
+				shortlist.nodes = append(shortlist.nodes, v)
+			}
+		}
 		//sort.Sort(shortlist) // now update it with the new kclosest nodes.
 
 		//kclosest = shortlist.nodes[:ksize]
@@ -107,9 +107,17 @@ func (d *DHT) lookup(target []byte) []*Node {
 		}
 	}
 	sort.Sort(shortlist)
-	if len(kclosest) < ksize {
-		return shortlist.nodes
+	var m map[string]bool = make(map[string]bool)
+	var flist []*Node
+	for _, n := range shortlist.nodes {
+		if !(m[string(n.ID)]) {
+			flist = append(flist, n)
+			m[string(n.ID)] = true
+		}
 	}
-	kclosest = shortlist.nodes[:ksize]
+	if len(flist) < ksize {
+		return flist
+	}
+	kclosest = flist[:ksize]
 	return kclosest
 }

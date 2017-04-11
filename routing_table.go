@@ -1,13 +1,15 @@
 package main
 
 import (
+	"fmt"
 	"math/big"
 	"sort"
-	"fmt"
 )
 
 const ksize = 3
 const IDLength = 4
+
+var seenMap map[string]bool = make(map[string]bool)
 
 // Contains the implementation of kbuckets and the table itself.
 func NewBucket(size int) *Kbucket {
@@ -20,17 +22,17 @@ func NewBucket(size int) *Kbucket {
 func (k *Kbucket) addNode(n *Node) {
 	// check if already exists
 	// if it exists move to tail of the list
-	pos, exists := k.checkNodeExists(n) // should return pos and bool
+	exists := seenMap[string(n.ID)]
+	//pos, exists := k.checkNodeExists(n) // should return pos and bool
 	if exists {
 		// // move to the end.
-		k.bucket = append(k.bucket[:pos], k.bucket[pos+1:]...)
-		k.bucket =  append(k.bucket, n)
 	} else {
 		if len(k.bucket) == k.Size {
 			// pinging stuff
 			k.bucket = k.bucket[1:]
 			k.bucket = append(k.bucket, n)
 		} else {
+			seenMap[string(n.ID)] = true
 			k.bucket = append(k.bucket, n)
 		}
 	}
@@ -101,6 +103,7 @@ func (rt *RoutingTable) getKClosest(target []byte) *neighborList {
 			}
 			if rt.buckets[i].bucket[j] != nil {
 				closest.nodes = append(closest.nodes, rt.buckets[i].bucket[j]) // adding node
+
 			}
 		}
 
