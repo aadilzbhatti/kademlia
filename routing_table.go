@@ -20,11 +20,11 @@ func NewBucket(size int) *Kbucket {
 func (k *Kbucket) addNode(n *Node) {
 	// check if already exists
 	// if it exists move to tail of the list
-	_, exists := k.checkNodeExists(n) // should return pos and bool
+	pos, exists := k.checkNodeExists(n) // should return pos and bool
 	if exists {
 		// // move to the end.
-		// k.bucket = append(k.bucket[:pos], k.bucket[pos+1:])
-		// append(k.bucket, n)
+		k.bucket = append(k.bucket[:pos], k.bucket[pos+1:]...)
+		k.bucket =  append(k.bucket, n)
 	} else {
 		if len(k.bucket) == k.Size {
 			// pinging stuff
@@ -35,11 +35,11 @@ func (k *Kbucket) addNode(n *Node) {
 }
 
 func (k *Kbucket) checkNodeExists(n *Node) (int, bool) {
-	// for i := range k.bucket {
-	// 	if string(k.bucket[i].ID) == string(n.ID) {
-	// 		return i, true
-	// 	}
-	// }
+	for i := range k.bucket {
+		if string(k.bucket[i].ID) == string(n.ID) {
+			return i, true
+		}
+	}
 	return -1, false
 }
 
