@@ -82,10 +82,11 @@ func makeJoinCall(self Node, host string) error {
 		return err
 	}
 
-	ja := JoinArgs{self.Id, self.Address, self.Port, "NEWNODE"}
+	ja := JoinArgs{self.Id, self.Address, self.Port, "NEWNODE", &self}
+	fmt.Printf("%v\n", ja)
 	var reply string
 	divCall := client.Go("Node.Join", &ja, &reply, nil)
 	replyCall := <-divCall.Done
-	log.Printf("Node %d joined the system: %s\n", self.Id, replyCall.Reply)
+	log.Println(replyCall.Reply)
 	return nil
 }

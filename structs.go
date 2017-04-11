@@ -30,6 +30,7 @@ type JoinArgs struct {
 	Hostname string
 	Port     int
 	NewNode  string
+  HostNode *Node
 }
 
 type FindArgs struct {
