@@ -28,7 +28,9 @@ func (k *Kbucket) addNode(n *Node) {
 	} else {
 		if len(k.bucket) == k.Size {
 			// pinging stuff
-		} else {
+			k.bucket = k.bucket[1:]
+			k.bucket = append(k.bucket, n)
+		else {
 			k.bucket = append(k.bucket, n)
 		}
 	}
