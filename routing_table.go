@@ -34,11 +34,11 @@ func (k *Kbucket) addNode(n *Node) {
 }
 
 func (k *Kbucket) checkNodeExists(n *Node) (int, bool) {
-	for i := range k.bucket {
-		if string(k.bucket[i].ID) == string(n.ID) {
-			return i, true
-		}
-	}
+	// for i := range k.bucket {
+	// 	if string(k.bucket[i].ID) == string(n.ID) {
+	// 		return i, true
+	// 	}
+	// }
 	return -1, false
 }
 
