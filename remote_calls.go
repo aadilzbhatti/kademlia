@@ -102,7 +102,9 @@ func (d *DHT) Owners(key *[]byte, reply *[]*Node) error {
 func (d *DHT) ListLocal(args *string, reply *[]KV) error {
 	list := make([]KV, 10)
 	for k, v := range self.Storage {
-		list = append(list, KV{[]byte(k), []byte(v)})
+		if k != "" {
+			list = append(list, KV{[]byte(k), []byte(v)})
+		}
 	}
 
 	// reply with all keys in our Node
