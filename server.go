@@ -82,7 +82,7 @@ func makeJoinCall(self Node, host string) error {
 		return err
 	}
 
-	ja := JoinArgs{self.Id, self.Address, self.Port, "NEWNODE", &self}
+	ja := JoinArgs{self.Id, self.Address, self.Port, "NEWNODE"}
 	//fmt.Printf("%v\n", ja)
 	var reply string
 	divCall := client.Go("Node.Join", &ja, &reply, nil)
