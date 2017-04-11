@@ -12,7 +12,7 @@ const IDLength = 4
 func NewBucket(size int) *Kbucket {
 	return &Kbucket{
 		Size:   size,
-		bucket: make([]*Node, 0),
+		bucket: make([]*Node, 10),
 	}
 }
 
