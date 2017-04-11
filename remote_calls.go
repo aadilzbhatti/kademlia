@@ -30,7 +30,7 @@ func (d *DHT) Join(ja *JoinArgs, reply *Node) error {
 			var reply Node
 			divCall := client.Go("DHT.Join", ja, &reply, nil)
 			replyCall := <-divCall.Done
-			log.Println(replyCalIl.Reply)
+			log.Println(replyCall.Reply)
 		}
 	}
 	log.Printf("Node%v has joined Node%v\n", ja.ID, self.ID)
