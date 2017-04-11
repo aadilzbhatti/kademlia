@@ -6,7 +6,6 @@ import (
 	"net"
 	"net/rpc"
 	"sync"
-	reuse "github.com/jbenet/go-reuseport"
 )
 
 var barrier sync.WaitGroup
@@ -69,13 +68,12 @@ func setupRPC() {
 	rpc.Register(node)
 	messageHost := fmt.Sprintf("%s:%d", myhost, port)
 	fmt.Println("this is the", messageHost)
+	l, e := net.Listen("tcp", ":3000")
+	if e != nil {
+		log.Fatal("Join listen error: ", e)
+	}
 
 	for {
-		//l, e := net.Listen("tcp", ":3000")
-		l, e := reuse.Listen("tcp", ":3000")
-		if e != nil {
-			log.Fatal("Join listen error: ", e)
-		}
 		go rpc.Accept(l)
 	}
 }
@@ -91,6 +89,6 @@ func makeJoinCall(self Node, host string) error {
 	var reply string
 	divCall := client.Go("Node.Join", ja, &reply, nil)
 	replyCall := <-divCall.Done
-	fmt.Println(replyCall)
+	log.Printf("Node %d joined the system: %s\n", self.Id, replyCall.Reply)
 	return nil
 }
