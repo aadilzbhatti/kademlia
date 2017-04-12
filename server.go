@@ -116,6 +116,6 @@ func makeJoinCall(self DHT, host string) {
 
     // insert the new guy into my bucket
     self.Rt.insert(&reply)
-  }
+  //}
 	//defer barrier.Done()
 }
