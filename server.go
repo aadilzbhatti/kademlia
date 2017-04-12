@@ -94,14 +94,14 @@ func setupRPC() {
 }
 
 /**
- * Wrapper for a Nodeto join a Nodeat a hostname
+ * Wrapper for a Node to join a Node at a hostname
  */
 func makeJoinCall(self DHT, host string) error {
   for {
     client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", host, port))
 		defer client.Close()
     if err != nil {
-      log.Println(err)
+      log.Println("fuck")
       continue
     }
 
