@@ -42,7 +42,7 @@ func startServer() {
 	barrier.Add(2)
 	for i := 1; i < 4; i++ {
 		if string(nodeId) != string(i) {
-			go makeJoinCall(self, fmt.Sprintf(host, i))
+			makeJoinCall(self, fmt.Sprintf(host, i))
 		}
 	}
 	barrier.Wait()
@@ -99,11 +99,11 @@ func setupRPC() {
  * Wrapper for a Node to join a Node at a hostname
  */
 func makeJoinCall(self DHT, host string) {
-  for {
+  //for {
     client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", host, port))
     if err != nil {
       log.Println("fuck")
-      continue
+    //  continue
     }
 
     // make the RPC
@@ -117,5 +117,5 @@ func makeJoinCall(self DHT, host string) {
     // insert the new guy into my bucket
     self.Rt.insert(&reply)
   }
-	defer barrier.Done()
+	//defer barrier.Done()
 }
