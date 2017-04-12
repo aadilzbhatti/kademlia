@@ -28,9 +28,11 @@ func (d *DHT) Join(ja *JoinArgs, reply *Node) error {
 				return err
 			}
 			var reply Node
-			divCall := client.Go("DHT.Join", ja, &reply, nil)
-			replyCall := <-divCall.Done
-			log.Println(replyCall.Reply)
+			err = client.Call("DHT.Join", ja, &reply)
+			if err != nil {
+				log.Println("Error in join: ", err)
+				return err
+			}
 		}
 	}
 	log.Printf("Node%v has joined Node%v\n", ja.ID, self.ID)
@@ -41,16 +43,16 @@ func (d *DHT) Set(sa *SetArgs, reply *string) error {
 	// find the k closest Nodes which have the key
 	kClosest := self.lookup(sa.KVP.Key)
 	for _, n := range kClosest {
-		fmt.Printf("Id -> %v\n", n.ID)
 		client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", n.Address, port))
 		if err != nil {
 			log.Println("Error in dial: ", err)
 			return err
 		}
 		var reply string
-		divCall := client.Go("DHT.StoreKVP", sa, &reply, nil)
-		replyCall := <-divCall.Done
-		log.Println(replyCall.Reply)
+		err = client.Call("DHT.StoreKVP", sa, &reply)
+    if err != nil {
+      log.Println("Error in calling store: ", err)
+    }
 	}
 
 	// reply ACK to original Node

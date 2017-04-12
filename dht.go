@@ -48,11 +48,6 @@ func (d *DHT) KClosestRPC(target *[]byte, reply *[]*Node) error {
 
 func (d *DHT) lookup(target []byte) []*Node {
 	kclosest := d.Rt.getKClosest(target).nodes
-	fmt.Println("--KCLOSEST--")
-	for _, v := range kclosest {
-		fmt.Printf("%v, ", v)
-	}
-	fmt.Println("")
 	closest := kclosest[0]
 
 	seen := make(map[string]bool)
@@ -65,9 +60,6 @@ func (d *DHT) lookup(target []byte) []*Node {
 	numresponses := 0
 	i := 0
 	for (numresponses) < ksize && i < (shortlist.Len()) {
-		for _, v := range shortlist.nodes {
-			fmt.Printf("%v, ", v)
-		}
 		fmt.Println("")
 		if seen[string(shortlist.nodes[i].ID)] {
 			i++

@@ -41,11 +41,7 @@ func startServer() {
 	// add nodes {1, 2, 3} \ nodeID to buckets
 	for i := 1; i < 4; i++ {
 		if string(nodeId) != string(i) {
-			err := makeJoinCall(self, fmt.Sprintf(host, i))
-			if err != nil {
-				log.Println("Failed to join node:", i)
-			}
-			log.Println("Joined in!")
+			go makeJoinCall(self, fmt.Sprintf(host, i))
 		}
 	}
 
@@ -64,6 +60,8 @@ func republishKeys() {
 
 		// periodically update k closest nodes for each key with KVPs (replicas)
     client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", hostname, port))
+		defer client.Close()
+
     if err != nil {
       continue
     }
@@ -87,6 +85,7 @@ func setupRPC() {
 	rpc.Register(dht)
 
 	l, e := net.Listen("tcp", ":3000")
+	defer l.Close()
 	if e != nil {
 		log.Println("Join listen error: ", e)
 	}
@@ -98,21 +97,26 @@ func setupRPC() {
  * Wrapper for a Nodeto join a Nodeat a hostname
  */
 func makeJoinCall(self DHT, host string) error {
-	client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", host, port))
-	if err != nil {
-		log.Println(err)
-		return err
-	}
+  for {
+    client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", host, port))
+		defer client.Close()
+    if err != nil {
+      log.Println(err)
+      continue
+    }
 
-	// make the RPC
-	ja := JoinArgs{self.ID, hostname, port, "NEWNODE"}
-	var reply Node
-	divCall := client.Go("DHT.Join", &ja, &reply, nil)
-	replyCall := <-divCall.Done
-	log.Println(replyCall)
+    // make the RPC
+    ja := JoinArgs{self.ID, hostname, port, "NEWNODE"}
+    var reply Node
+    err = client.Call("DHT.Join", &ja, &reply)
+		if err != nil {
+			log.Println("Error in initial join: ", err)
+			return err
+		}
 
-	// insert the new guy into my bucket
-	self.Rt.insert(&reply)
+    // insert the new guy into my bucket
+    self.Rt.insert(&reply)
 
-	return nil
+    return nil
+  }
 }

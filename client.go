@@ -70,6 +70,9 @@ func runCommand(cmds []string, i int) {
 		}
 
 	} else {
-
+    err := clientBatch(cmds[i + 1])
+		if err != nil {
+			fmt.Println("ERROR: ", err)
+		}
 	}
 }
