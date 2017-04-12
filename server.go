@@ -87,7 +87,6 @@ func setupRPC() {
 	rpc.Register(dht)
 
 	l, e := net.Listen("tcp", ":3000")
-	defer l.Close()
 	if e != nil {
 		log.Println("Join listen error: ", e)
 	}
@@ -102,7 +101,7 @@ func makeJoinCall(self DHT, host string) {
   //for {
     client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", host, port))
     if err != nil {
-      log.Println("fuck")
+      log.Println(err)
     //  continue
     }
 
