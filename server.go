@@ -101,7 +101,6 @@ func setupRPC() {
 func makeJoinCall(self DHT, host string) {
   for {
     client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", host, port))
-		defer client.Close()
     if err != nil {
       log.Println("fuck")
       continue
