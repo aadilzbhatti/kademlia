@@ -20,9 +20,7 @@ func (d *DHT) Join(ja *JoinArgs, reply *Node) error {
 
 	// send a message to the other nodes
 	if ja.NewNode != "" {
-		fmt.Println("b4")
 		kClosest := self.lookup(ja.ID)
-		fmt.Println("done")
 		for _, n := range kClosest {
 			client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", n.Address, port))
 			defer client.Close()
