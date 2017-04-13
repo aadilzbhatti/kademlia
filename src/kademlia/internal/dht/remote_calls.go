@@ -15,7 +15,7 @@ type JoinArgs struct {
 	ID       []byte
 	Hostname string
 	Port     int
-	NewNode  string
+	NewNode  bool
 }
 
 type FindArgs struct {
@@ -38,7 +38,7 @@ func (d *DHT) Join(ja *JoinArgs, reply *routing.Node) error {
 	*reply = myself
 
 	// send a message to the other nodes
-	if ja.NewNode != "" {
+	if ja.NewNode {
 		self.Rt.Insert(&n)
 		kClosest := self.Lookup(ja.ID)
 		for _, n := range kClosest {
@@ -48,7 +48,8 @@ func (d *DHT) Join(ja *JoinArgs, reply *routing.Node) error {
 				return err
 			}
 			var reply routing.Node
-			err = client.Call("DHT.Join", ja, &reply)
+			ja.NewNode = false
+			err = client.Call("DHT.Join", &ja, &reply)
 			if err != nil {
 				log.Println("Error in join: ", err)
 				return err

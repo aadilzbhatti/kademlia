@@ -100,14 +100,13 @@ func setupRPC() {
 func makeJoinCall(self DHT, host string, id int) {
 	log.Printf("Node %v is trying to join Node %v\n", self.ID, id)
 	for {
-		fmt.Println("Joining...")
 		client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", host, port))
 		if err != nil {
 			continue
 		}
 
 		// make the RPC
-		ja := JoinArgs{self.ID, hostname, port, "NEWNODE"}
+		ja := JoinArgs{self.ID, hostname, port, true}
 		var reply routing.Node
 		err = client.Call("DHT.Join", &ja, &reply)
 		if err != nil {
