@@ -23,7 +23,6 @@ func createDHT(id []byte) *DHT {
 	return dht
 }
 
-// register dht
 func (d *DHT) remoteLookup(n *Node, target []byte) []*Node {
 	client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", n.Address, port))
 	if err != nil {

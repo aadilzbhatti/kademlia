@@ -41,7 +41,7 @@ func startServer() {
 	// add nodes {1, 2, 3} \ nodeID to buckets
 	for i := 1; i < 10; i++ {
 		if string(nodeId) != string(i) {
-			go makeJoinCall(self, fmt.Sprintf(host, i))
+			go makeJoinCall(self, fmt.Sprintf(host, i), i)
 		}
 	}
 
@@ -94,7 +94,8 @@ func setupRPC() {
 /**
  * Wrapper for a Node to join a Node at a hostname
  */
-func makeJoinCall(self DHT, host string) {
+func makeJoinCall(self DHT, host string, id int) {
+	log.Printf("Node %v is trying to join Node %v\n", self.ID, id)
   for {
     client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", host, port))
     if err != nil {
@@ -111,6 +112,7 @@ func makeJoinCall(self DHT, host string) {
 
     // insert the new guy into my bucket
     self.Rt.insert(&reply)
+		log.Printf("Node %v has joined Node %v\n", self.ID, id)
 		break
   }
 }

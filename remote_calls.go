@@ -10,7 +10,6 @@ func (d *DHT) Join(ja *JoinArgs, reply *Node) error {
 	if string(ja.ID) == string(self.ID) {
 		return nil
 	}
-	log.Printf("Node%v is trying to join Node%v\n", ja.ID, self.ID)
 
 	// populate my buckets
 	n := Node{ja.ID, ja.Hostname, ja.Port}
@@ -35,7 +34,6 @@ func (d *DHT) Join(ja *JoinArgs, reply *Node) error {
 			}
 		}
 	}
-	log.Printf("Node%v has joined Node%v\n", ja.ID, self.ID)
 	return nil
 }
 

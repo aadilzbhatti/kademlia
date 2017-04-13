@@ -16,13 +16,14 @@ func clientSet(key string, value string) error {
 		log.Println("Could not connect to server:", err)
 		return err
 	}
+  defer client.Close()
 	KVP := KV{[]byte(key), []byte(value)}
 	sa := SetArgs{KVP}
 	var reply string
-	divCall := client.Go("DHT.Set", &sa, &reply, nil)
-	replyCall := <-divCall.Done
-	if replyCall.Error != nil {
-		return replyCall.Error
+	err = client.Call("DHT.Set", &sa, &reply)
+	if err != nil {
+    log.Println("Error in set: ", err)
+		return err
 	}
 	log.Printf("Successfully SET %s=%s\n", key, value)
 	return nil
