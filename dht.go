@@ -72,7 +72,15 @@ func (d *DHT) lookup(target []byte) []*Node {
 		if kclosest_r1 == nil {
 			log.Printf("Node %v has failed\n", shortlist.nodes[i].ID)
 			if shortlist.nodes != nil {
+				for _, v := range shortlist.nodes {
+					fmt.Printf("%v, ", v.ID)
+				}
+				fmt.Println("")
 				shortlist.nodes = append(shortlist.nodes[:i], shortlist.nodes[i+1:]...)
+				for _, v := range shortlist.nodes {
+					fmt.Printf("%v, ", v.ID)
+				}
+				fmt.Println("")
 			}
 			i++
 			continue
