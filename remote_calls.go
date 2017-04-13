@@ -15,11 +15,11 @@ func (d *DHT) Join(ja *JoinArgs, reply *Node) error {
 	// populate my buckets
 	n := Node{ja.ID, ja.Hostname, ja.Port}
 	myself := Node{self.ID, fmt.Sprintf("sp17-cs425-g26-0%d.cs.illinois.edu", self.ID[0]), port}
-	self.Rt.insert(&n)
 	*reply = myself
 
 	// send a message to the other nodes
 	if ja.NewNode != "" {
+		self.Rt.insert(&n)
 		kClosest := self.lookup(ja.ID)
 		for _, n := range kClosest {
 			client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", n.Address, port))
