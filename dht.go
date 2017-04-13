@@ -90,11 +90,12 @@ func (d *DHT) lookup(target []byte) []*Node {
 		//kclosest = shortlist.nodes[:ksize]
 		// We will get a list of k closest nodes according to
 		// the closest node.
-		// Now check if we found a closer Nodeto the current closest or not.
+		// Now check if we found a closer Node to the current closest or not.
 		if bytes.Compare(closest.ID, kclosest_r1[0].ID) == 0 {
 			// found the best one
 			//kclosest has the final result now.
 			sort.Sort(shortlist)
+			fmt.Printf("%v is shortlist.nodes\n", shortlist.nodes)
 			kclosest = shortlist.nodes[:ksize]
 			return kclosest
 		}
