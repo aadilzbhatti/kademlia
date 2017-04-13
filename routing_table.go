@@ -46,7 +46,9 @@ func (k *Kbucket) addNode(n *Node) {
 	}
 	fmt.Println("Added?")
 	for _, v := range k.bucket {
-		fmt.Printf("%v, ", v.ID)
+		if v != nil {
+			fmt.Printf("%v, ", v.ID)
+		}
 	}
 	fmt.Println("")
 }
