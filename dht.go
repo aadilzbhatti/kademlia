@@ -73,9 +73,11 @@ func (d *DHT) lookup(target []byte) []*Node {
 			log.Printf("Node %v has failed\n", shortlist.nodes[i].ID)
 			for i, v := range self.Rt.buckets {
 				for j, n := range v.bucket {
-					if string(n.ID) == string(shortlist.nodes[i].ID) {
-						self.Rt.buckets[i].bucket = append(self.Rt.buckets[i].bucket[:j], self.Rt.buckets[i].bucket[j + 1:]...)// TODO DELETE NODE  FROM BUCKET IF DEAD
-					}
+          if n != nil {
+            if string(n.ID) == string(shortlist.nodes[i].ID) {
+  						self.Rt.buckets[i].bucket = append(self.Rt.buckets[i].bucket[:j], self.Rt.buckets[i].bucket[j + 1:]...)// TODO DELETE NODE  FROM BUCKET IF DEAD
+  					}
+          }
 				}
 			}
 			if shortlist.nodes != nil {
