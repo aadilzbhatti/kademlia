@@ -46,7 +46,6 @@ func (d *DHT) KClosestRPC(target *[]byte, reply *[]*Node) error {
 }
 
 func (d *DHT) lookup(target []byte) []*Node {
-	fmt.Println("Here")
 	kclosest := d.Rt.getKClosest(target).nodes
 	if len(kclosest) == 0 {
 		return nil
