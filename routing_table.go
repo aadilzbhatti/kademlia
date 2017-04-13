@@ -23,7 +23,9 @@ func NewBucket(size int) *Kbucket {
 func (k *Kbucket) addNode(n *Node) {
 	fmt.Println("Adding")
 	for _, v := range k.bucket {
-		fmt.Printf("%v, ", v.ID)
+		if v != nil {
+			fmt.Printf("%v, ", v.ID)
+		}
 	}
 	fmt.Println("")
 	// check if already exists
