@@ -114,6 +114,7 @@ func makeJoinCall(self DHT, host string, id int) {
 		}
 
     // insert the new guy into my bucket
+		fmt.Printf("%v is new guy\n", reply)
     self.Rt.insert(&reply)
 		log.Printf("Node %v has joined Node %v\n", self.ID, id)
 		for i, v := range self.Rt.buckets {
