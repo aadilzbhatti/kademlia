@@ -21,7 +21,11 @@ func NewBucket(size int) *Kbucket {
 }
 
 func (k *Kbucket) addNode(n *Node) {
-	fmt.Printf("%v, %v, %v\n", k.seenMap, k.seenMap, n.ID[0])
+	fmt.Println("Adding")
+	for _, v := range k.bucket {
+		fmt.Printf("%v, ", v.ID)
+	}
+	fmt.Println("")
 	// check if already exists
 	// if it exists move to tail of the list
 	exists := k.seenMap[string(n.ID[0])]
@@ -40,6 +44,11 @@ func (k *Kbucket) addNode(n *Node) {
 		}
 		k.seenMap[string(n.ID[0])] = true
 	}
+	fmt.Println("Added?")
+	for _, v := range k.bucket {
+		fmt.Printf("%v, ", v.ID)
+	}
+	fmt.Println("")
 }
 
 func (k *Kbucket) checkNodeExists(n *Node) (int, bool) {

@@ -113,36 +113,7 @@ func makeJoinCall(self DHT, host string, id int) {
 			break
 		}
 
-    // insert the new guy into my bucket
-		// fmt.Printf("%v is new guy\n", reply)
-		// for i, v := range self.Rt.buckets {
-		// 	fmt.Printf("Node %d, bucket %d\n", self.ID, i)
-		// 	fmt.Printf("%v\n", v.bucket)
-		// 	for _, n := range v.bucket {
-		// 		if n == nil {
-		// 			fmt.Printf("nil, ")
-		// 		} else {
-		// 			fmt.Printf("%v, ", n.ID)
-		// 		}
-		// 	}
-		// 	fmt.Println("")
-		// }
-
-    //self.Rt.insert(&reply)
-
 		log.Printf("Node %v has joined Node %v\n", self.ID, id)
-	// 	for i, v := range self.Rt.buckets {
-	// 		fmt.Printf("Node %d, bucket %d\n", self.ID, i)
-	// 		fmt.Printf("%v\n", v.bucket)
-	// 		for _, n := range v.bucket {
-	// 			if n == nil {
-	// 				fmt.Printf("nil, ")
-	// 			} else {
-	// 				fmt.Printf("%v, ", n.ID)
-	// 			}
-	// 		}
-	// 		fmt.Println("")
-	// 	}
 		break
   }
 }
