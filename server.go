@@ -127,7 +127,9 @@ func makeJoinCall(self DHT, host string, id int) {
 			}
 			fmt.Println("")
 		}
-    self.Rt.insert(&reply)
+
+    //self.Rt.insert(&reply)
+
 		log.Printf("Node %v has joined Node %v\n", self.ID, id)
 		for i, v := range self.Rt.buckets {
 			fmt.Printf("Node %d, bucket %d\n", self.ID, i)
