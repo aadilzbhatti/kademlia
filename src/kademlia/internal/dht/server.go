@@ -100,6 +100,7 @@ func setupRPC() {
 func makeJoinCall(self DHT, host string, id int) {
 	log.Printf("Node %v is trying to join Node %v\n", self.ID, id)
 	for {
+		fmt.Println("Joining...")
 		client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", host, port))
 		if err != nil {
 			continue

@@ -120,9 +120,32 @@ func (d *DHT) GetKVP(key *string, reply *KV) error {
 	return nil
 }
 
-func (d *DHT) Owners(key *[]byte, reply *[]*routing.Node) error {
-	// find Nodes with given key
-	*reply = self.Lookup(*key)
+func (d *DHT) Owners(target *[]byte, reply *[]*routing.Node) error {
+	// find Nodes most likely to have given key
+	result := self.Lookup(*target)
+	ret := make([]*routing.Node, 0)
+	key := string(*target)
+
+	// check if they actually have the key
+	for _, v := range result {
+		client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", v.Address, port))
+		if err != nil {
+			log.Println("Error in find RPC: ", err)
+			continue
+		}
+		var kvp KV
+		err = client.Call("DHT.GetKVP", &key, &kvp)
+		if err != nil {
+			client.Close()
+			continue
+		}
+		if kvp.Value != nil {
+			ret = append(ret, v)
+		}
+		client.Close()
+	}
+
+	*reply = ret
 	return nil
 }
 

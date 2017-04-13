@@ -1,8 +1,6 @@
-1. Run `go build`
-2. Run `./mp2`
-  - Note: you MUST run nodes 1, 2, 3 together as they are the coordinators,
-    failing to do this will cause the system to crash
-3. Once 1,2,3 have been started, you can boot up whichever nodes you want at any time
+1. Run `startup.sh` and make sure the first argument to `ln -s` is the absolute path of the `src/kademlia` folder
+2. Run `go build`
+3. Run `./mp2` on any subset of the nodes
 
 
 Citations:
