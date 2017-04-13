@@ -21,18 +21,9 @@ func NewBucket(size int) *Kbucket {
 }
 
 func (k *Kbucket) addNode(n *Node) {
-	fmt.Println("Adding")
-	for _, v := range k.bucket {
-		if v != nil {
-			fmt.Printf("%v, ", v.ID)
-		}
-	}
-	fmt.Println("")
 	// check if already exists
 	// if it exists move to tail of the list
 	exists := k.seenMap[string(n.ID[0])]
-	fmt.Println(exists)
-	//pos, exists := k.checkNodeExists(n) // should return pos and bool
 	if exists {
 		// // move to the end.
 	} else {
@@ -46,27 +37,6 @@ func (k *Kbucket) addNode(n *Node) {
 		}
 		k.seenMap[string(n.ID[0])] = true
 	}
-	fmt.Println("Added?")
-	for _, v := range k.bucket {
-		if v != nil {
-			fmt.Printf("%v, ", v.ID)
-		}
-	}
-	fmt.Println("")
-}
-
-func (k *Kbucket) checkNodeExists(n *Node) (int, bool) {
-	// for i := range k.bucket {
-	// 	if string(k.bucket[i].ID) == string(n.ID) {
-	// 		return i, true
-	// 	}
-	// }
-	return -1, false
-}
-
-type RoutingTable struct {
-	ID      []byte
-	buckets [IDLength * 8]*Kbucket
 }
 
 func NewRoutingTable(id []byte) *RoutingTable {

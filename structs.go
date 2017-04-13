@@ -16,6 +16,11 @@ type Kbucket struct {
 	seenMap map[string]bool
 }
 
+type RoutingTable struct {
+	ID      []byte
+	buckets [IDLength * 8]*Kbucket
+}
+
 type KV struct {
 	Key   []byte
 	Value []byte
