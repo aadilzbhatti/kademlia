@@ -60,7 +60,7 @@ func republishKeys() {
   if err != nil {
 		log.Printf("Error in republish dial: ", err)
   }
-	
+
 	for {
 		time.Sleep(20 * time.Second)
     log.Printf("Republishing at node %d\n", nodeId)
@@ -114,6 +114,7 @@ func makeJoinCall(self DHT, host string, id int) {
 		}
 
 		log.Printf("Node %v has joined Node %v\n", self.ID, id)
+		client.Close()
 		break
   }
 }

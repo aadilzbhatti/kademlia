@@ -9,6 +9,17 @@ import (
 const ksize = 3
 const IDLength = 4
 
+type Kbucket struct {
+	Size   int
+	bucket []*Node
+	seenMap map[string]bool
+}
+
+type RoutingTable struct {
+	ID      []byte
+	buckets [IDLength * 8]*Kbucket
+}
+
 //var seenMap map[string]bool = make(map[string]bool)
 
 // Contains the implementation of kbuckets and the table itself.

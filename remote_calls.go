@@ -7,6 +7,25 @@ import (
 	"sort"
 )
 
+/**
+ * RPC argument structs
+ */
+type JoinArgs struct {
+	ID       []byte
+	Hostname string
+	Port     int
+	NewNode  string
+}
+
+type FindArgs struct {
+	Target []byte
+	Node   Node
+}
+
+type SetArgs struct {
+	KVP KV
+}
+
 func (d *DHT) Join(ja *JoinArgs, reply *Node) error {
 	if string(ja.ID) == string(self.ID) {
 		return nil
@@ -23,7 +42,6 @@ func (d *DHT) Join(ja *JoinArgs, reply *Node) error {
 		kClosest := self.lookup(ja.ID)
 		for _, n := range kClosest {
 			client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", n.Address, port))
-			defer client.Close()
 			if err != nil {
 				log.Println("Error in dial: ", err)
 				return err
@@ -34,6 +52,7 @@ func (d *DHT) Join(ja *JoinArgs, reply *Node) error {
 				log.Println("Error in join: ", err)
 				return err
 			}
+			client.Close()
 		}
 	}
 	return nil
@@ -48,12 +67,12 @@ func (d *DHT) Set(sa *SetArgs, reply *string) error {
 			log.Println("Error in dial: ", err)
 			return err
 		}
-		defer client.Close()
 		var reply string
 		err = client.Call("DHT.StoreKVP", sa, &reply)
     if err != nil {
       log.Println("Error in calling store: ", err)
     }
+		client.Close()
 	}
 
 	// reply ACK to original Node
@@ -71,7 +90,6 @@ func (d *DHT) Find(target *[]byte, reply *KV) error {
 	nodes := self.lookup(*target)
 	for _, v := range nodes {
 		client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", v.Address, port))
-		defer client.Close()
 		if err != nil {
 			log.Println("Error in find RPC: ", err)
 			continue
@@ -80,11 +98,13 @@ func (d *DHT) Find(target *[]byte, reply *KV) error {
 		err = client.Call("DHT.GetKVP", &key, &reply)
 		if err != nil {
 			log.Println("Error in getting the key: ", err)
+			client.Close()
 			continue
 		}
 		if reply.Value != nil {
 			return nil
 		}
+		client.Close()
 		break
 	}
 	*reply = KV{*target, nil}
