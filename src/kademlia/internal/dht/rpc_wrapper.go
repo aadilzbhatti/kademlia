@@ -1,16 +1,13 @@
-package main
+package dht
 
 import (
-	"bufio"
 	"fmt"
+	"kademlia/internal/dht/internal/routing"
 	"log"
 	"net/rpc"
-	"os"
-	"regexp"
-	"strings"
 )
 
-func clientSet(key string, value string) error {
+func Set(key string, value string) error {
 	client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", hostname, port))
 	if err != nil {
 		log.Println("Could not connect to server:", err)
@@ -29,7 +26,7 @@ func clientSet(key string, value string) error {
 	return nil
 }
 
-func clientGet(key string) error {
+func Get(key string) error {
 	client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", hostname, port))
 	if err != nil {
 		log.Println("Could not connect to server:", err)
@@ -51,11 +48,11 @@ func clientGet(key string) error {
 	return nil
 }
 
-func clientOwners(key string) error {
+func Owners(key string) error {
 	client, _ := rpc.Dial("tcp", fmt.Sprintf("%s:%d", hostname, port))
 	defer client.Close()
 	target := []byte(key)
-	var reply []Node
+	var reply []routing.Node
 	err := client.Call("DHT.Owners", &target, &reply)
 	if err != nil {
 		log.Println("Error in owners: ", err)
@@ -72,7 +69,7 @@ func clientOwners(key string) error {
 	return nil
 }
 
-func clientListLocal() error {
+func ListLocal() error {
 	client, _ := rpc.Dial("tcp", fmt.Sprintf("%s:%d", hostname, port))
 	defer client.Close()
 	var reply []KV
@@ -89,29 +86,6 @@ func clientListLocal() error {
 		}
 	} else {
 		log.Printf("No keys located at this node.")
-	}
-	return nil
-}
-
-func clientBatch(fname string) error {
-	r, _ := regexp.Compile("(GET) (.*)|(SET) (.*) (.*)|(LIST_LOCAL)|(OWNERS) (.*)|(BATCH (.*))")
-	if file, err := os.Open(fname); err == nil {
-		defer file.Close()
-		scanner := bufio.NewScanner(file)
-		for scanner.Scan() {
-			line := strings.TrimSpace(scanner.Text())
-			if r.MatchString(line) {
-				res := r.FindStringSubmatch(line)
-				for i := range res {
-					if i > 0 && res[i] != "" {
-						runCommand(res, i)
-						break
-					}
-				}
-			}
-		}
-	} else {
-		return err
 	}
 	return nil
 }

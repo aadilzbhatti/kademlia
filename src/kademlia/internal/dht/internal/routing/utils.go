@@ -1,23 +1,22 @@
-package main
+package routing
 
 import (
-	"fmt"
 	"hash/fnv"
-	"os/exec"
-	"strings"
+	"math/big"
 )
 
-/**
- * Returns the hostname of the current node
- *
- * @type {string}
- */
-func getHostName() string {
-	out, err := exec.Command("hostname").Output()
-	if err != nil {
-		fmt.Println("Failed to obtain hostname")
-	}
-	return strings.TrimSpace(string(out))
+//http://stackoverflow.com/questions/23192262/how-would-you-set-and-clear-a-single-bit-in-go
+
+func hasBit(n int, pos uint) bool {
+	val := n & (1 << pos)
+	return (val > 0)
+}
+
+func CalculateDistance(id1, id2 []byte) *big.Int {
+	a := new(big.Int).SetBytes(id1)
+	b := new(big.Int).SetBytes(id2)
+	dist := new(big.Int).Xor(a, b)
+	return dist
 }
 
 /**
@@ -52,12 +51,4 @@ func getConflictingBit(id1, id2 []byte) int {
 		}
 	}
 	return 0 // same id
-}
-
-/**
- * Returns the distance between nodes with
- * id=id1 and id=id2
- */
-func distance(id1 int, id2 int) int {
-	return id1 ^ id2
 }

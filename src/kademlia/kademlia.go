@@ -1,14 +1,16 @@
-package main
+package kademlia
 
 import (
 	"bufio"
 	"fmt"
+	"kademlia/internal/dht"
 	"os"
 	"regexp"
+	"strings"
 )
 
-func main() {
-	go startServer()
+func Start() {
+	go dht.StartServer()
 
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Println("Starting DHT interface")
@@ -46,33 +48,56 @@ func main() {
 
 func runCommand(cmds []string, i int) {
 	if cmds[i] == "SET" {
-		err := clientSet(cmds[i+1], cmds[i+2])
+		err := dht.Set(cmds[i+1], cmds[i+2])
 		if err != nil {
 			fmt.Println(err)
 		}
 
 	} else if cmds[i] == "GET" {
-		err := clientGet(cmds[i+1])
+		err := dht.Get(cmds[i+1])
 		if err != nil {
 			fmt.Println("ERROR: ", err)
 		}
 
 	} else if cmds[i] == "OWNERS" {
-		err := clientOwners(cmds[i+1])
+		err := dht.Owners(cmds[i+1])
 		if err != nil {
 			fmt.Println("ERROR: ", err)
 		}
 
 	} else if cmds[i] == "LIST_LOCAL" {
-		err := clientListLocal()
+		err := dht.ListLocal()
 		if err != nil {
 			fmt.Println("ERROR: ", err)
 		}
 
 	} else {
-		err := clientBatch(cmds[i+1])
+		err := Batch(cmds[i+1])
 		if err != nil {
 			fmt.Println("ERROR: ", err)
 		}
 	}
+}
+
+func Batch(fname string) error {
+	r, _ := regexp.Compile("(GET) (.*)|(SET) (.*) (.*)|(LIST_LOCAL)|(OWNERS) (.*)|(BATCH (.*))")
+	if file, err := os.Open(fname); err == nil {
+		defer file.Close()
+		scanner := bufio.NewScanner(file)
+		for scanner.Scan() {
+			line := strings.TrimSpace(scanner.Text())
+			if r.MatchString(line) {
+				res := r.FindStringSubmatch(line)
+				for i := range res {
+					if i > 0 && res[i] != "" {
+						runCommand(res, i)
+						break
+					}
+				}
+			}
+		}
+	} else {
+		return err
+	}
+	return nil
 }

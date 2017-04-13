@@ -1,36 +1,37 @@
-package main
+package dht
 
 import (
 	"bytes"
 	"fmt"
+	"kademlia/internal/dht/internal/routing"
 	"log"
 	"net/rpc"
 	"sort"
 )
 
 type DHT struct {
-	Rt      *RoutingTable
+	Rt      *routing.RoutingTable
 	ID      []byte
 	Storage map[string]string // Key Value Store
 }
 
 func createDHT(id []byte) *DHT {
 	dht := &DHT{
-		Rt:      NewRoutingTable(id),
+		Rt:      routing.NewRoutingTable(id),
 		ID:      id,
 		Storage: make(map[string]string),
 	}
 	return dht
 }
 
-func (d *DHT) remoteLookup(n *Node, target []byte) []*Node {
+func (d *DHT) remoteLookup(n *routing.Node, target []byte) []*routing.Node {
 	client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", n.Address, port))
 	if err != nil {
 		log.Println("Error in remote lookup: ", err)
 		return nil
 	}
 	defer client.Close()
-	var reply []*Node
+	var reply []*routing.Node
 	err = client.Call("DHT.KClosestRPC", &target, &reply)
 	if err != nil {
 		log.Println("Error in calling RPC: ", err)
@@ -39,14 +40,14 @@ func (d *DHT) remoteLookup(n *Node, target []byte) []*Node {
 	return reply
 }
 
-func (d *DHT) KClosestRPC(target *[]byte, reply *[]*Node) error {
-	r := self.Rt.getKClosest(*target)
-	*reply = r.nodes
+func (d *DHT) KClosestRPC(target *[]byte, reply *[]*routing.Node) error {
+	r := self.Rt.GetKClosest(*target)
+	*reply = r.Nodes
 	return nil
 }
 
-func (d *DHT) lookup(target []byte) []*Node {
-	kclosest := d.Rt.getKClosest(target).nodes
+func (d *DHT) Lookup(target []byte) []*routing.Node {
+	kclosest := d.Rt.GetKClosest(target).Nodes
 	if len(kclosest) == 0 {
 		return nil
 	}
@@ -56,33 +57,33 @@ func (d *DHT) lookup(target []byte) []*Node {
 	// K closest nodes on this node.
 	// Now have to query everyone.
 	// Now alpha = 1 so query the first node.
-	var shortlist neighborList
+	var shortlist routing.NeighborList
 	shortlist.ID = target
-	shortlist.nodes = kclosest // refine this after every iteration.
+	shortlist.Nodes = kclosest // refine this after every iteration.
 	numresponses := 0
 	i := 0
-	for (numresponses) < ksize && i < (shortlist.Len()) {
-		if seen[string(shortlist.nodes[i].ID)] {
+	for (numresponses) < routing.KSize && i < (shortlist.Len()) {
+		if seen[string(shortlist.Nodes[i].ID)] {
 			i++
 			continue
 		}
 
-		seen[string(shortlist.nodes[i].ID)] = true
-		kclosest_r1 := d.remoteLookup(shortlist.nodes[i], target)
+		seen[string(shortlist.Nodes[i].ID)] = true
+		kclosest_r1 := d.remoteLookup(shortlist.Nodes[i], target)
 		if kclosest_r1 == nil {
-			log.Printf("Node %v has failed\n", shortlist.nodes[i].ID)
-			for k, v := range self.Rt.buckets {
-				for j, n := range v.bucket {
+			log.Printf("Node %v has failed\n", shortlist.Nodes[i].ID)
+			for k, v := range self.Rt.Buckets {
+				for j, n := range v.Bucket {
 					if n != nil {
-						if string(n.ID) == string(shortlist.nodes[i].ID) {
+						if string(n.ID) == string(shortlist.Nodes[i].ID) {
 							log.Printf("Deleted node %v from the system\n", n.ID)
-							self.Rt.buckets[k].bucket = append(self.Rt.buckets[k].bucket[:j], self.Rt.buckets[k].bucket[j+1:]...)
+							self.Rt.Buckets[k].Bucket = append(self.Rt.Buckets[k].Bucket[:j], self.Rt.Buckets[k].Bucket[j+1:]...)
 						}
 					}
 				}
 			}
-			if shortlist.nodes != nil {
-				shortlist.nodes = append(shortlist.nodes[:i], shortlist.nodes[i+1:]...)
+			if shortlist.Nodes != nil {
+				shortlist.Nodes = append(shortlist.Nodes[:i], shortlist.Nodes[i+1:]...)
 			}
 			i++
 			continue
@@ -92,12 +93,12 @@ func (d *DHT) lookup(target []byte) []*Node {
 		numresponses++
 		for _, v := range kclosest_r1 {
 			if !seen[string(v.ID)] {
-				shortlist.nodes = append(shortlist.nodes, v)
+				shortlist.Nodes = append(shortlist.Nodes, v)
 			}
 		}
 		//sort.Sort(shortlist) // now update it with the new kclosest nodes.
 
-		//kclosest = shortlist.nodes[:ksize]
+		//kclosest = shortlist.Nodes[:ksize]
 		// We will get a list of k closest nodes according to
 		// the closest node.
 		// Now check if we found a closer Node to the current closest or not.
@@ -105,28 +106,28 @@ func (d *DHT) lookup(target []byte) []*Node {
 			// found the best one
 			//kclosest has the final result now.
 			sort.Sort(shortlist)
-			if len(kclosest) >= ksize {
-				kclosest = shortlist.nodes[:ksize]
+			if len(kclosest) >= routing.KSize {
+				kclosest = shortlist.Nodes[:routing.KSize]
 			}
 			return kclosest
 		}
 		// update closest node
-		if calculateDistance(target, kclosest[0].ID).Cmp(calculateDistance(target, closest.ID)) == -1 {
+		if routing.CalculateDistance(target, kclosest[0].ID).Cmp(routing.CalculateDistance(target, closest.ID)) == -1 {
 			closest = kclosest[0] // update closest
 		}
 	}
 	sort.Sort(shortlist)
 	var m map[string]bool = make(map[string]bool)
-	var flist []*Node
-	for _, n := range shortlist.nodes {
+	var flist []*routing.Node
+	for _, n := range shortlist.Nodes {
 		if !(m[string(n.ID)]) {
 			flist = append(flist, n)
 			m[string(n.ID)] = true
 		}
 	}
-	if len(flist) < ksize {
+	if len(flist) < routing.KSize {
 		return flist
 	}
-	kclosest = flist[:ksize]
+	kclosest = flist[:routing.KSize]
 	return kclosest
 }

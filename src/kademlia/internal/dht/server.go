@@ -1,7 +1,8 @@
-package main
+package dht
 
 import (
 	"fmt"
+	"kademlia/internal/dht/internal/routing"
 	"log"
 	"net"
 	"net/rpc"
@@ -20,7 +21,7 @@ var hostname string
  * Starts up the server allowing for nodes to join the
  * distributed hash table
  */
-func startServer() {
+func StartServer() {
 
 	// set up NodeID
 	fmt.Println("Starting!")
@@ -106,7 +107,7 @@ func makeJoinCall(self DHT, host string, id int) {
 
 		// make the RPC
 		ja := JoinArgs{self.ID, hostname, port, "NEWNODE"}
-		var reply Node
+		var reply routing.Node
 		err = client.Call("DHT.Join", &ja, &reply)
 		if err != nil {
 			log.Println("Error in initial join: ", err)

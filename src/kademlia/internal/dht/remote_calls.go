@@ -1,7 +1,8 @@
-package main
+package dht
 
 import (
 	"fmt"
+	"kademlia/internal/dht/internal/routing"
 	"log"
 	"net/rpc"
 	"sort"
@@ -19,34 +20,34 @@ type JoinArgs struct {
 
 type FindArgs struct {
 	Target []byte
-	Node   Node
+	Node   routing.Node
 }
 
 type SetArgs struct {
 	KVP KV
 }
 
-func (d *DHT) Join(ja *JoinArgs, reply *Node) error {
+func (d *DHT) Join(ja *JoinArgs, reply *routing.Node) error {
 	if string(ja.ID) == string(self.ID) {
 		return nil
 	}
 
 	// populate my buckets
-	n := Node{ja.ID, ja.Hostname, ja.Port}
-	myself := Node{self.ID, fmt.Sprintf("sp17-cs425-g26-0%d.cs.illinois.edu", self.ID[0]), port}
+	n := routing.Node{ja.ID, ja.Hostname, ja.Port}
+	myself := routing.Node{self.ID, fmt.Sprintf("sp17-cs425-g26-0%d.cs.illinois.edu", self.ID[0]), port}
 	*reply = myself
 
 	// send a message to the other nodes
 	if ja.NewNode != "" {
-		self.Rt.insert(&n)
-		kClosest := self.lookup(ja.ID)
+		self.Rt.Insert(&n)
+		kClosest := self.Lookup(ja.ID)
 		for _, n := range kClosest {
 			client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", n.Address, port))
 			if err != nil {
 				log.Println("Error in dial: ", err)
 				return err
 			}
-			var reply Node
+			var reply routing.Node
 			err = client.Call("DHT.Join", ja, &reply)
 			if err != nil {
 				log.Println("Error in join: ", err)
@@ -60,7 +61,7 @@ func (d *DHT) Join(ja *JoinArgs, reply *Node) error {
 
 func (d *DHT) Set(sa *SetArgs, reply *string) error {
 	// find the k closest Nodes which have the key
-	kClosest := self.lookup(sa.KVP.Key)
+	kClosest := self.Lookup(sa.KVP.Key)
 	for _, n := range kClosest {
 		client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", n.Address, port))
 		if err != nil {
@@ -87,7 +88,7 @@ func (d *DHT) StoreKVP(sa *SetArgs, reply *string) error {
 }
 
 func (d *DHT) Find(target *[]byte, reply *KV) error {
-	nodes := self.lookup(*target)
+	nodes := self.Lookup(*target)
 	for _, v := range nodes {
 		client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", v.Address, port))
 		if err != nil {
@@ -119,9 +120,9 @@ func (d *DHT) GetKVP(key *string, reply *KV) error {
 	return nil
 }
 
-func (d *DHT) Owners(key *[]byte, reply *[]*Node) error {
+func (d *DHT) Owners(key *[]byte, reply *[]*routing.Node) error {
 	// find Nodes with given key
-	*reply = self.lookup(*key)
+	*reply = self.Lookup(*key)
 	return nil
 }
 
