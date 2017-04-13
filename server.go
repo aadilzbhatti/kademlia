@@ -110,6 +110,7 @@ func makeJoinCall(self DHT, host string, id int) {
     err = client.Call("DHT.Join", &ja, &reply)
 		if err != nil {
 			log.Println("Error in initial join: ", err)
+			break
 		}
 
     // insert the new guy into my bucket

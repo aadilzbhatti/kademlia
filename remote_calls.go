@@ -46,11 +46,11 @@ func (d *DHT) Set(sa *SetArgs, reply *string) error {
 	for _, n := range kClosest {
 		fmt.Printf("%v is node\n", n)
 		client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", n.Address, port))
-		defer client.Close()
 		if err != nil {
 			log.Println("Error in dial: ", err)
 			return err
 		}
+		defer client.Close()
 		var reply string
 		err = client.Call("DHT.StoreKVP", sa, &reply)
     if err != nil {
