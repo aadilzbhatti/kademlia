@@ -102,18 +102,20 @@ func (d *DHT) Find(target *[]byte, reply *KV) error {
 			continue
 		}
 		if reply.Value != nil {
+			client.Close()
 			return nil
 		}
-		client.Close()
-		break
 	}
-	*reply = KV{*target, nil}
-	return nil
+	client.Close()
+	return fmt.Errorf("No such key in system")
 }
 
 func (d *DHT) GetKVP(key *string, reply *KV) error {
-	value := self.Storage[*key]
-	*reply = KV{[]byte(*key), []byte(value)}
+	if value, ok := self.Storage[*key]; ok {
+		*reply = KV{[]byte(*key), []byte(value)}
+	} else {
+		*reply = KV{[]byte(*key), nil}
+	}
 	return nil
 }
 

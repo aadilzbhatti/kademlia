@@ -56,10 +56,10 @@ func startServer() {
  */
 func republishKeys() {
 	client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", hostname, port))
-	defer client.Close()
 	if err != nil {
 		log.Printf("Error in republish dial: ", err)
 	}
+	defer client.Close()
 
 	for {
 		time.Sleep(20 * time.Second)
@@ -110,6 +110,7 @@ func makeJoinCall(self DHT, host string, id int) {
 		err = client.Call("DHT.Join", &ja, &reply)
 		if err != nil {
 			log.Println("Error in initial join: ", err)
+			client.Close()
 			break
 		}
 
