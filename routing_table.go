@@ -20,7 +20,6 @@ func NewBucket(size int) *Kbucket {
 }
 
 func (k *Kbucket) addNode(n *Node) {
-	fmt.Printf("Adding %v\n", n)
 	// check if already exists
 	// if it exists move to tail of the list
 	exists := seenMap[string(n.ID)]
@@ -28,6 +27,7 @@ func (k *Kbucket) addNode(n *Node) {
 	if exists {
 		// // move to the end.
 	} else {
+		fmt.Printf("Adding %v\n", n)
 		if len(k.bucket) == k.Size {
 			// pinging stuff
 			k.bucket = k.bucket[1:]
