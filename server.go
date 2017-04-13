@@ -60,6 +60,7 @@ func republishKeys() {
 
 		// periodically update k closest nodes for each key with KVPs (replicas)
     client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", hostname, port))
+		defer client.Close()
 
     if err != nil {
       continue

@@ -35,6 +35,7 @@ func clientGet(key string) error {
     log.Println("Could not connect to server:", err)
     return err
   }
+	defer client.Close()
 	target := []byte(key)
 	var reply KV
 	err = client.Call("DHT.Find", &target, &reply)
@@ -52,6 +53,7 @@ func clientGet(key string) error {
 
 func clientOwners(key string) error {
 	client, _ := rpc.Dial("tcp", fmt.Sprintf("%s:%d", hostname, port))
+	defer client.Close()
 	target := []byte(key)
 	var reply []Node
 	err := client.Call("DHT.Owners", &target, &reply)
@@ -72,6 +74,7 @@ func clientOwners(key string) error {
 
 func clientListLocal() error {
 	client, _ := rpc.Dial("tcp", fmt.Sprintf("%s:%d", hostname, port))
+	defer client.Close()
 	var reply []KV
 	var args string
 	err := client.Call("DHT.ListLocal", &args, &reply)

@@ -29,6 +29,7 @@ func (d *DHT) remoteLookup(n *Node, target []byte) []*Node {
 		log.Println("Error in remote lookup: ", err)
 		return nil
 	}
+	defer client.Close()
 	var reply []*Node
 	err = client.Call("DHT.KClosestRPC", &target, &reply)
 	if err != nil {

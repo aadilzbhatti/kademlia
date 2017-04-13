@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/rpc"
+	"sort"
 )
 
 func (d *DHT) Join(ja *JoinArgs, reply *Node) error {
@@ -22,6 +23,7 @@ func (d *DHT) Join(ja *JoinArgs, reply *Node) error {
 		kClosest := self.lookup(ja.ID)
 		for _, n := range kClosest {
 			client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", n.Address, port))
+			defer client.Close()
 			if err != nil {
 				log.Println("Error in dial: ", err)
 				return err
@@ -42,6 +44,7 @@ func (d *DHT) Set(sa *SetArgs, reply *string) error {
 	kClosest := self.lookup(sa.KVP.Key)
 	for _, n := range kClosest {
 		client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", n.Address, port))
+		defer client.Close()
 		if err != nil {
 			log.Println("Error in dial: ", err)
 			return err
@@ -68,6 +71,7 @@ func (d *DHT) Find(target *[]byte, reply *KV) error {
 	nodes := self.lookup(*target)
 	for _, v := range nodes {
 		client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", v.Address, port))
+		defer client.Close()
 		if err != nil {
 			log.Println("Error in find RPC: ", err)
 			continue
@@ -100,11 +104,14 @@ func (d *DHT) Owners(key *[]byte, reply *[]*Node) error {
 }
 
 func (d *DHT) ListLocal(args *string, reply *[]KV) error {
-	list := make([]KV, 10)
-	for k, v := range self.Storage {
-		if k != "" {
-			list = append(list, KV{[]byte(k), []byte(v)})
-		}
+	list := make([]KV, 0)
+	keys := make([]string, 0)
+	for k, _ := range self.Storage {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for _, k := range keys {
+		list = append(list, KV{[]byte(k), []byte(self.Storage[k])})
 	}
 
 	// reply with all keys in our Node
