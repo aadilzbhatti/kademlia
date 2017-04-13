@@ -13,6 +13,7 @@ type Node struct {
 type Kbucket struct {
 	Size   int
 	bucket []*Node
+	seenMap map[string]bool
 }
 
 type KV struct {

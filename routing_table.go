@@ -9,21 +9,22 @@ import (
 const ksize = 3
 const IDLength = 4
 
-var seenMap map[string]bool = make(map[string]bool)
+//var seenMap map[string]bool = make(map[string]bool)
 
 // Contains the implementation of kbuckets and the table itself.
 func NewBucket(size int) *Kbucket {
 	return &Kbucket{
 		Size:   size,
 		bucket: make([]*Node, ksize),
+		seenMap: make(map[string]bool),
 	}
 }
 
 func (k *Kbucket) addNode(n *Node) {
-	fmt.Printf("%v\n", seenMap)
+	fmt.Printf("%v\n", k.seenMap)
 	// check if already exists
 	// if it exists move to tail of the list
-	exists := seenMap[string(n.ID)]
+	exists := k.seenMap[string(n.ID)]
 	//pos, exists := k.checkNodeExists(n) // should return pos and bool
 	if exists {
 		// // move to the end.
@@ -34,7 +35,7 @@ func (k *Kbucket) addNode(n *Node) {
 			k.bucket = k.bucket[1:]
 			k.bucket = append(k.bucket, n)
 		} else {
-			seenMap[string(n.ID)] = true
+			k.seenMap[string(n.ID)] = true
 			k.bucket = append(k.bucket, n)
 		}
 	}
