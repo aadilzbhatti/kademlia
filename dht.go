@@ -95,8 +95,9 @@ func (d *DHT) lookup(target []byte) []*Node {
 			// found the best one
 			//kclosest has the final result now.
 			sort.Sort(shortlist)
-			fmt.Printf("%v is shortlist.nodes\n", shortlist.nodes)
-			kclosest = shortlist.nodes[:ksize]
+			if len(kclosest) >= ksize {
+				kclosest = shortlist.nodes[:ksize]
+			}
 			return kclosest
 		}
 		// update closest node
