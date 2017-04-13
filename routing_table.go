@@ -69,7 +69,9 @@ func (rt *RoutingTable) insert(n *Node) {
 }
 
 func (rt *RoutingTable) findBucketIndex(target []byte) int {
-	bucketIndex := getConflictingBit(target, rt.ID)
+	hashedValue := hash(string(target), 10)
+	tgt := []byte(string(hashedValue))
+	bucketIndex := getConflictingBit(tgt, rt.ID)
 	return bucketIndex
 }
 
