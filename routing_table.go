@@ -3,6 +3,7 @@ package main
 import (
 	"math/big"
 	"sort"
+	"fmt"
 )
 
 const ksize = 3
@@ -19,6 +20,7 @@ func NewBucket(size int) *Kbucket {
 }
 
 func (k *Kbucket) addNode(n *Node) {
+	fmt.Printf("Adding %v\n", n)
 	// check if already exists
 	// if it exists move to tail of the list
 	exists := seenMap[string(n.ID)]
