@@ -21,10 +21,10 @@ func NewBucket(size int) *Kbucket {
 }
 
 func (k *Kbucket) addNode(n *Node) {
-	fmt.Printf("%v\n", k.seenMap)
+	fmt.Printf("%v, %v, %v\n", k.seenMap, k.seenMap, n)
 	// check if already exists
 	// if it exists move to tail of the list
-	exists := k.seenMap[string(n.ID)]
+	exists := k.seenMap[string(n.ID[0])]
 	//pos, exists := k.checkNodeExists(n) // should return pos and bool
 	if exists {
 		// // move to the end.
@@ -38,7 +38,7 @@ func (k *Kbucket) addNode(n *Node) {
 			fmt.Printf("%v\n", k.seenMap)
 			k.bucket = append(k.bucket, n)
 		}
-		k.seenMap[string(n.ID)] = true
+		k.seenMap[string(n.ID[0])] = true
 	}
 }
 
