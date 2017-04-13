@@ -105,8 +105,8 @@ func (d *DHT) Find(target *[]byte, reply *KV) error {
 			client.Close()
 			return nil
 		}
+		client.Close()
 	}
-	client.Close()
 	return fmt.Errorf("No such key in system")
 }
 

@@ -75,6 +75,7 @@ func (d *DHT) lookup(target []byte) []*Node {
 				for j, n := range v.bucket {
 					if n != nil {
 						if string(n.ID) == string(shortlist.nodes[i].ID) {
+							log.Printf("Deleted node %v from the system\n", n.ID)
 							self.Rt.buckets[k].bucket = append(self.Rt.buckets[k].bucket[:j], self.Rt.buckets[k].bucket[j+1:]...)
 						}
 					}

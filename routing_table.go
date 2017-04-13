@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math/big"
 	"sort"
 )
@@ -38,7 +37,6 @@ func (k *Kbucket) addNode(n *Node) {
 	if exists {
 		// // move to the end.
 	} else {
-		fmt.Printf("Adding %v\n", n)
 		if len(k.bucket) == k.Size {
 			// pinging stuff
 			k.bucket = k.bucket[1:]
