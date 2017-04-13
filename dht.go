@@ -46,6 +46,7 @@ func (d *DHT) KClosestRPC(target *[]byte, reply *[]*Node) error {
 }
 
 func (d *DHT) lookup(target []byte) []*Node {
+	fmt.Println("Here")
 	kclosest := d.Rt.getKClosest(target).nodes
 	if len(kclosest) == 0 {
 		return nil
@@ -70,8 +71,10 @@ func (d *DHT) lookup(target []byte) []*Node {
 		seen[string(shortlist.nodes[i].ID)] = true
 		kclosest_r1 := d.remoteLookup(shortlist.nodes[i], target)
 		if kclosest_r1 == nil {
-			//log.Printf("Node %v has failed\n", shortlist.nodes[i].ID)
-			//shortlist.nodes = append(shortlist.nodes[:i], shortlist.nodes[i+1:]...)
+			log.Printf("Node %v has failed\n", shortlist.nodes[i].ID)
+			if shortlist.nodes != nil {
+				shortlist.nodes = append(shortlist.nodes[:i], shortlist.nodes[i+1:]...)
+			}
 			i++
 			continue
 		}
