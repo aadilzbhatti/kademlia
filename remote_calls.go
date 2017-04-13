@@ -69,6 +69,11 @@ func (d *DHT) StoreKVP(sa *SetArgs, reply *string) error {
 
 func (d *DHT) Find(target *[]byte, reply *KV) error {
 	nodes := self.lookup(*target)
+	fmt.Println("FIND")
+	for _, v := range nodes {
+		fmt.Printf("%v, ", v.ID)
+	}
+	fmt.Println("")
 	for _, v := range nodes {
 		client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", v.Address, port))
 		defer client.Close()
