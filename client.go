@@ -47,18 +47,18 @@ func main() {
 func runCommand(cmds []string, i int) {
 	if cmds[i] == "SET" {
 		err := clientSet(cmds[i+1], cmds[i+2])
-    if err != nil {
-		    fmt.Println(err)
-    }
+		if err != nil {
+			fmt.Println(err)
+		}
 
 	} else if cmds[i] == "GET" {
-    err := clientGet(cmds[i + 1])
-    if err != nil {
-      fmt.Println("ERROR: ", err)
-    }
+		err := clientGet(cmds[i+1])
+		if err != nil {
+			fmt.Println("ERROR: ", err)
+		}
 
 	} else if cmds[i] == "OWNERS" {
-		err := clientOwners(cmds[i + 1])
+		err := clientOwners(cmds[i+1])
 		if err != nil {
 			fmt.Println("ERROR: ", err)
 		}
@@ -70,7 +70,7 @@ func runCommand(cmds []string, i int) {
 		}
 
 	} else {
-    err := clientBatch(cmds[i + 1])
+		err := clientBatch(cmds[i+1])
 		if err != nil {
 			fmt.Println("ERROR: ", err)
 		}

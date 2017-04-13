@@ -1,13 +1,13 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"log"
 	"net/rpc"
-  "os"
-	"bufio"
-	"strings"
+	"os"
 	"regexp"
+	"strings"
 )
 
 func clientSet(key string, value string) error {
@@ -16,13 +16,13 @@ func clientSet(key string, value string) error {
 		log.Println("Could not connect to server:", err)
 		return err
 	}
-  defer client.Close()
+	defer client.Close()
 	KVP := KV{[]byte(key), []byte(value)}
 	sa := SetArgs{KVP}
 	var reply string
 	err = client.Call("DHT.Set", &sa, &reply)
 	if err != nil {
-    log.Println("Error in set: ", err)
+		log.Println("Error in set: ", err)
 		return err
 	}
 	log.Printf("Successfully SET %s=%s\n", key, value)
@@ -30,11 +30,11 @@ func clientSet(key string, value string) error {
 }
 
 func clientGet(key string) error {
-  client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", hostname, port))
-  if err != nil {
-    log.Println("Could not connect to server:", err)
-    return err
-  }
+	client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", hostname, port))
+	if err != nil {
+		log.Println("Could not connect to server:", err)
+		return err
+	}
 	defer client.Close()
 	target := []byte(key)
 	var reply KV
@@ -95,11 +95,11 @@ func clientListLocal() error {
 
 func clientBatch(fname string) error {
 	r, _ := regexp.Compile("(GET) (.*)|(SET) (.*) (.*)|(LIST_LOCAL)|(OWNERS) (.*)|(BATCH (.*))")
-  if file, err := os.Open(fname); err == nil {
-    defer file.Close()
-    scanner := bufio.NewScanner(file)
-    for scanner.Scan() {
-      line := strings.TrimSpace(scanner.Text())
+	if file, err := os.Open(fname); err == nil {
+		defer file.Close()
+		scanner := bufio.NewScanner(file)
+		for scanner.Scan() {
+			line := strings.TrimSpace(scanner.Text())
 			if r.MatchString(line) {
 				res := r.FindStringSubmatch(line)
 				for i := range res {
@@ -109,8 +109,8 @@ func clientBatch(fname string) error {
 					}
 				}
 			}
-    }
-  } else {
+		}
+	} else {
 		return err
 	}
 	return nil

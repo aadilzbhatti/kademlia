@@ -69,9 +69,9 @@ func (d *DHT) Set(sa *SetArgs, reply *string) error {
 		}
 		var reply string
 		err = client.Call("DHT.StoreKVP", sa, &reply)
-    if err != nil {
-      log.Println("Error in calling store: ", err)
-    }
+		if err != nil {
+			log.Println("Error in calling store: ", err)
+		}
 		client.Close()
 	}
 

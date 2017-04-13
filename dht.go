@@ -73,11 +73,11 @@ func (d *DHT) lookup(target []byte) []*Node {
 			log.Printf("Node %v has failed\n", shortlist.nodes[i].ID)
 			for k, v := range self.Rt.buckets {
 				for j, n := range v.bucket {
-          if n != nil {
-            if string(n.ID) == string(shortlist.nodes[i].ID) {
-  						self.Rt.buckets[k].bucket = append(self.Rt.buckets[k].bucket[:j], self.Rt.buckets[k].bucket[j + 1:]...)
-  					}
-          }
+					if n != nil {
+						if string(n.ID) == string(shortlist.nodes[i].ID) {
+							self.Rt.buckets[k].bucket = append(self.Rt.buckets[k].bucket[:j], self.Rt.buckets[k].bucket[j+1:]...)
+						}
+					}
 				}
 			}
 			if shortlist.nodes != nil {

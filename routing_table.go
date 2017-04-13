@@ -1,17 +1,17 @@
 package main
 
 import (
+	"fmt"
 	"math/big"
 	"sort"
-	"fmt"
 )
 
 const ksize = 3
 const IDLength = 4
 
 type Kbucket struct {
-	Size   int
-	bucket []*Node
+	Size    int
+	bucket  []*Node
 	seenMap map[string]bool
 }
 
@@ -25,8 +25,8 @@ type RoutingTable struct {
 // Contains the implementation of kbuckets and the table itself.
 func NewBucket(size int) *Kbucket {
 	return &Kbucket{
-		Size:   size,
-		bucket: make([]*Node, ksize),
+		Size:    size,
+		bucket:  make([]*Node, ksize),
 		seenMap: make(map[string]bool),
 	}
 }
