@@ -71,11 +71,12 @@ func (d *DHT) lookup(target []byte) []*Node {
 		kclosest_r1 := d.remoteLookup(shortlist.nodes[i], target)
 		if kclosest_r1 == nil {
 			log.Printf("Node %v has failed\n", shortlist.nodes[i].ID)
+			log.Printf("%v -> shortlist\n", shortlist.nodes[i])
 			for i, v := range self.Rt.buckets {
 				for j, n := range v.bucket {
           if n != nil {
             if string(n.ID) == string(shortlist.nodes[i].ID) {
-  						self.Rt.buckets[i].bucket = append(self.Rt.buckets[i].bucket[:j], self.Rt.buckets[i].bucket[j + 1:]...)// TODO DELETE NODE  FROM BUCKET IF DEAD
+  						self.Rt.buckets[i].bucket = append(self.Rt.buckets[i].bucket[:j], self.Rt.buckets[i].bucket[j + 1:]...) // DELETE NODE FROM BUCKET IF DEAD
   					}
           }
 				}

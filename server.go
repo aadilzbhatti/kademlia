@@ -57,6 +57,7 @@ func startServer() {
 func republishKeys() {
 	for {
 		time.Sleep(20 * time.Second)
+    log.Printf("Republishing at node %d\n", nodeId)
 
 		// periodically update k closest nodes for each key with KVPs (replicas)
     client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", hostname, port))
