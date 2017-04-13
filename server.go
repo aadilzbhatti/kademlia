@@ -120,9 +120,9 @@ func makeJoinCall(self DHT, host string, id int) {
 		for i, v := range self.Rt.buckets {
 			fmt.Printf("Node %d, bucket %d\n", self.ID, i)
 			fmt.Printf("%v\n", v.bucket)
-			for _, n := range v.bucket {
-				fmt.Printf("Node %d\n", n.ID)
-			}
+			//for _, n := range v.bucket {
+				//fmt.Printf("Node %d\n", n.ID)
+			//}
 		}
 		break
   }
