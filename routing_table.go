@@ -20,6 +20,7 @@ func NewBucket(size int) *Kbucket {
 }
 
 func (k *Kbucket) addNode(n *Node) {
+	fmt.Printf("%v\n", seenMap)
 	// check if already exists
 	// if it exists move to tail of the list
 	exists := seenMap[string(n.ID)]
