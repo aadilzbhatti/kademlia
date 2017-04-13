@@ -55,16 +55,17 @@ func startServer() {
  * Republishes keys every T time units
  */
 func republishKeys() {
+  client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", hostname, port))
+	defer client.Close()
+  if err != nil {
+		log.Printf("Error in republish dial: ", err)
+  }
+	
 	for {
 		time.Sleep(20 * time.Second)
     log.Printf("Republishing at node %d\n", nodeId)
-
 		// periodically update k closest nodes for each key with KVPs (replicas)
-    client, err := rpc.Dial("tcp", fmt.Sprintf("%s:%d", hostname, port))
 
-    if err != nil {
-      continue
-    }
     for k, v := range self.Storage {
       sa := SetArgs{KV{[]byte(k), []byte(v)}}
 			var reply string
@@ -73,8 +74,6 @@ func republishKeys() {
 				log.Printf("Failed to republish on node %d\n", nodeId)
 			}
     }
-
-		client.Close()
 	}
 	defer barrier.Done()
 }
