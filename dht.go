@@ -67,8 +67,8 @@ func (d *DHT) lookup(target []byte) []*Node {
 		seen[string(shortlist.nodes[i].ID)] = true
 		kclosest_r1 := d.remoteLookup(shortlist.nodes[i], target)
 		if kclosest_r1 == nil {
-			log.Printf("Node %v has failed\n", shortlist.nodes[i].ID)
-			shortlist.nodes = append(shortlist.nodes[:i], shortlist.nodes[i+1:]...)
+			//log.Printf("Node %v has failed\n", shortlist.nodes[i].ID)
+			//shortlist.nodes = append(shortlist.nodes[:i], shortlist.nodes[i+1:]...)
 			i++
 			continue
 		}
