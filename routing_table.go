@@ -36,6 +36,7 @@ func (k *Kbucket) addNode(n *Node) {
 			k.bucket = append(k.bucket, n)
 		} else {
 			k.seenMap[string(n.ID)] = true
+			fmt.Printf("%v\n", k.seenMap)
 			k.bucket = append(k.bucket, n)
 		}
 	}
